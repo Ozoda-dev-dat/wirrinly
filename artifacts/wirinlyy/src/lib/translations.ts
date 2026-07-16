@@ -34,9 +34,12 @@ export const translations = {
     },
     contact: {
       title: "Biz bilan bog'laning",
-      order: "Buyurtma berish",
+      order: "Online buyurtma",
       hours: "Har kuni 10:00 - 23:00",
       location: "Toshkent, O'zbekiston"
+    },
+    order: {
+      cta: "Buyurtma"
     }
   },
   ru: {
@@ -74,9 +77,12 @@ export const translations = {
     },
     contact: {
       title: "Свяжитесь с нами",
-      order: "Заказать",
+      order: "Онлайн заказ",
       hours: "Каждый день 10:00 - 23:00",
       location: "Ташкент, Узбекистан"
+    },
+    order: {
+      cta: "Заказать"
     }
   }
 };

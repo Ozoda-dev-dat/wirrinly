@@ -41,11 +41,11 @@
 }
 
 :root {
-  /* Dark Chocolate Theme Default */
-  --background: 17 46% 10%; /* #25140D */
-  --foreground: 44 60% 90%; /* #F5EDD6 */
+  /* Dark Chocolate + Rose Theme */
+  --background: 17 46% 10%;
+  --foreground: 44 60% 90%;
   
-  --card: 17 46% 12%; /* #2B1810 */
+  --card: 17 46% 12%;
   --card-foreground: 44 60% 90%;
   --card-border: 17 46% 20%;
   
@@ -53,24 +53,24 @@
   --popover-foreground: 44 60% 90%;
   --popover-border: 17 46% 20%;
   
-  --primary: 44 60% 90%;
-  --primary-foreground: 17 46% 10%;
+  --primary: 345 75% 62%;
+  --primary-foreground: 0 0% 100%;
   
   --secondary: 17 46% 15%;
   --secondary-foreground: 44 60% 90%;
   
   --muted: 17 46% 15%;
-  --muted-foreground: 44 30% 70%;
+  --muted-foreground: 44 30% 65%;
   
-  --accent: 17 46% 20%;
-  --accent-foreground: 44 60% 90%;
+  --accent: 345 50% 20%;
+  --accent-foreground: 345 75% 80%;
   
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 100%;
   
-  --border: 17 46% 20%;
-  --input: 17 46% 20%;
-  --ring: 44 60% 90%;
+  --border: 17 40% 22%;
+  --input: 17 40% 22%;
+  --ring: 345 75% 62%;
   
   --radius: 0.5rem;
 }

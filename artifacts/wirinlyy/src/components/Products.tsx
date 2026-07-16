@@ -1,101 +1,104 @@
-import { motion, useScroll, useTransform } from 'framer-motion';
+import { motion, useScroll, useTransform, AnimatePresence } from 'framer-motion';
 import { useRef, useState } from 'react';
 import { useAppStore } from '@/store/useAppStore';
 import { translations } from '@/lib/translations';
 import { products } from '@/lib/data';
+import { OrderModal } from './OrderModal';
 
 function ProductCard({ product, index }: { product: any; index: number }) {
   const [isHovered, setIsHovered] = useState(false);
-  const cardRef = useRef<HTMLDivElement>(null);
-
-  // 3D Tilt Effect State
-  const [rotateX, setRotateX] = useState(0);
-  const [rotateY, setRotateY] = useState(0);
-
-  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
-    if (!cardRef.current) return;
-    const rect = cardRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left;
-    const y = e.clientY - rect.top;
-    
-    const centerX = rect.width / 2;
-    const centerY = rect.height / 2;
-    
-    const rotateXValue = ((y - centerY) / centerY) * -10;
-    const rotateYValue = ((x - centerX) / centerX) * 10;
-    
-    setRotateX(rotateXValue);
-    setRotateY(rotateYValue);
-  };
-
-  const handleMouseLeave = () => {
-    setRotateX(0);
-    setRotateY(0);
-    setIsHovered(false);
-  };
+  const [showModal, setShowModal] = useState(false);
+  const { lang } = useAppStore();
+  const t = translations[lang];
 
   return (
-    <motion.div
-      ref={cardRef}
-      initial={{ opacity: 0, y: 50 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-100px" }}
-      transition={{ duration: 0.8, delay: index * 0.1 }}
-      onMouseMove={handleMouseMove}
-      onMouseEnter={() => setIsHovered(true)}
-      onMouseLeave={handleMouseLeave}
-      style={{
-        perspective: 1000,
-      }}
-      className="relative group cursor-hover"
-    >
+    <>
       <motion.div
-        animate={{
-          rotateX,
-          rotateY,
-          scale: isHovered ? 1.02 : 1,
-        }}
-        transition={{ type: "spring", stiffness: 300, damping: 20 }}
-        className="relative w-full aspect-[4/5] bg-card rounded-2xl overflow-hidden flex flex-col justify-between p-6 border border-border/50"
+        initial={{ opacity: 0, y: 80 }}
+        whileInView={{ opacity: 1, y: 0 }}
+        viewport={{ once: true, margin: '-80px' }}
+        transition={{ duration: 0.9, delay: index * 0.12, ease: [0.16, 1, 0.3, 1] }}
+        onMouseEnter={() => setIsHovered(true)}
+        onMouseLeave={() => setIsHovered(false)}
+        className="relative group flex flex-col items-center cursor-hover"
       >
-        {/* Dynamic Background Hover */}
-        <div 
-          className={`absolute inset-0 opacity-0 group-hover:opacity-100 transition-opacity duration-700 ease-out pointer-events-none`}
-        >
-           <div className={`w-full h-full ${product.bgHover.replace('hover:', '')} opacity-40`} />
-        </div>
+        {/* Rose glow behind image on hover */}
+        <motion.div
+          animate={{ opacity: isHovered ? 1 : 0, scale: isHovered ? 1.1 : 0.8 }}
+          transition={{ duration: 0.6 }}
+          className="absolute top-1/4 left-1/2 -translate-x-1/2 -translate-y-1/2 w-64 h-64 rounded-full pointer-events-none"
+          style={{
+            background: 'radial-gradient(circle, hsl(345 75% 62% / 0.35) 0%, transparent 70%)',
+            filter: 'blur(30px)',
+          }}
+        />
 
-        <div className="relative z-10 flex-1 flex items-center justify-center">
+        {/* Product Image — no card, no border */}
+        <div className="relative w-full flex items-center justify-center" style={{ minHeight: 280 }}>
           <motion.img
             src={product.image}
             alt={product.name}
-            animate={{ 
-              scale: isHovered ? 1.1 : 1,
-              y: isHovered ? -10 : 0
+            animate={{
+              scale: isHovered ? 1.08 : 1,
+              y: isHovered ? -12 : 0,
+              filter: isHovered
+                ? 'drop-shadow(0 30px 60px hsl(345 75% 45% / 0.4))'
+                : 'drop-shadow(0 20px 40px rgba(0,0,0,0.6))',
             }}
-            transition={{ duration: 0.5, ease: "easeOut" }}
-            className="w-full h-full object-contain drop-shadow-2xl"
+            transition={{ duration: 0.5, ease: 'easeOut' }}
+            className="w-auto object-contain relative z-10"
+            style={{ maxHeight: 280, maxWidth: '100%' }}
           />
         </div>
 
-        <div className="relative z-10 mt-6 flex flex-col gap-2">
-          <h3 className="text-xl md:text-2xl font-serif font-bold text-foreground">
+        {/* Name — clip reveal on scroll */}
+        <div className="overflow-hidden mt-6 w-full text-center">
+          <motion.h3
+            initial={{ y: '100%' }}
+            whileInView={{ y: 0 }}
+            viewport={{ once: true, margin: '-40px' }}
+            transition={{ duration: 0.7, delay: index * 0.12 + 0.2, ease: [0.16, 1, 0.3, 1] }}
+            className="text-xl md:text-2xl font-serif font-bold text-foreground"
+          >
             {product.name}
-          </h3>
-          <div className="flex items-center justify-between">
-            <span className="text-lg font-mono text-primary font-bold">
-              {product.price.toLocaleString()} UZS
-            </span>
-            <div className="w-8 h-8 rounded-full border border-primary flex items-center justify-center opacity-0 group-hover:opacity-100 transition-all duration-300 transform translate-x-4 group-hover:translate-x-0">
-              <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-primary">
-                <line x1="5" y1="12" x2="19" y2="12"></line>
-                <polyline points="12 5 19 12 12 19"></polyline>
-              </svg>
-            </div>
-          </div>
+          </motion.h3>
         </div>
+
+        {/* Price — fade + slide from right */}
+        <motion.div
+          initial={{ opacity: 0, x: 20 }}
+          whileInView={{ opacity: 1, x: 0 }}
+          viewport={{ once: true, margin: '-40px' }}
+          transition={{ duration: 0.6, delay: index * 0.12 + 0.4 }}
+          className="mt-2 flex items-center gap-3"
+        >
+          <span className="text-2xl font-bold" style={{ color: 'hsl(345 75% 62%)' }}>
+            {product.price.toLocaleString()}
+          </span>
+          <span className="text-sm text-muted-foreground font-medium">UZS</span>
+        </motion.div>
+
+        {/* Order button — appears on hover */}
+        <motion.button
+          animate={{ opacity: isHovered ? 1 : 0, y: isHovered ? 0 : 8 }}
+          transition={{ duration: 0.3 }}
+          onClick={() => setShowModal(true)}
+          className="mt-4 px-6 py-2 rounded-full text-sm font-bold uppercase tracking-wider text-white border border-white/20 hover:border-primary transition-colors cursor-hover"
+          style={{ background: 'hsl(345 75% 62%)' }}
+        >
+          {t.order.cta}
+        </motion.button>
       </motion.div>
-    </motion.div>
+
+      <AnimatePresence>
+        {showModal && (
+          <OrderModal
+            onClose={() => setShowModal(false)}
+            defaultProduct={product.id}
+          />
+        )}
+      </AnimatePresence>
+    </>
   );
 }
 
@@ -105,45 +108,59 @@ export function Products() {
   const containerRef = useRef(null);
   const { scrollYProgress } = useScroll({
     target: containerRef,
-    offset: ["start end", "end start"]
+    offset: ['start end', 'end start'],
   });
-
-  const y = useTransform(scrollYProgress, [0, 1], [100, -100]);
+  const y = useTransform(scrollYProgress, [0, 1], [120, -120]);
 
   return (
-    <section id="products" ref={containerRef} className="relative py-32 md:py-48 bg-background overflow-hidden">
-      
-      {/* Decorative Text */}
-      <motion.div 
-        style={{ y }}
-        className="absolute top-0 left-[-10%] w-[120%] text-[20vw] font-serif font-black text-border/20 whitespace-nowrap pointer-events-none select-none uppercase"
+    <section id="products" ref={containerRef} className="relative py-32 md:py-48 overflow-hidden" style={{ background: 'hsl(17 46% 8%)' }}>
+
+      {/* Scrolling background text */}
+      <motion.div
+        style={{ y, color: 'hsl(17 40% 14%)', lineHeight: 1 }}
+        className="absolute top-0 left-[-10%] w-[120%] text-[18vw] font-serif font-black whitespace-nowrap pointer-events-none select-none uppercase"
+        aria-hidden
       >
-        {t.title} — {t.title} — {t.title}
+        {t.title} — {t.title} —
       </motion.div>
 
       <div className="container relative z-10 px-6 mx-auto">
-        <div className="mb-20 md:mb-32 flex flex-col items-center md:items-start">
-          <motion.h2 
-            initial={{ opacity: 0, y: 50 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8 }}
-            className="text-4xl md:text-7xl font-serif font-bold text-foreground mb-6"
-          >
-            {t.title}.
-          </motion.h2>
+        {/* Section heading */}
+        <div className="mb-24 md:mb-40 flex flex-col items-start gap-4">
           <motion.p
-            initial={{ opacity: 0, y: 50 }}
+            initial={{ opacity: 0, x: -20 }}
+            whileInView={{ opacity: 1, x: 0 }}
+            viewport={{ once: true }}
+            transition={{ duration: 0.6 }}
+            className="text-sm font-bold tracking-[0.3em] uppercase"
+            style={{ color: 'hsl(345 75% 62%)' }}
+          >
+            ✦ {lang === 'uz' ? 'Maxsus shirinliklar' : 'Авторские десерты'}
+          </motion.p>
+          <div className="overflow-hidden">
+            <motion.h2
+              initial={{ y: '100%' }}
+              whileInView={{ y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.9, ease: [0.16, 1, 0.3, 1] }}
+              className="text-5xl md:text-8xl font-serif font-black text-foreground leading-none"
+            >
+              {t.title}.
+            </motion.h2>
+          </div>
+          <motion.p
+            initial={{ opacity: 0, y: 20 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            transition={{ duration: 0.8, delay: 0.2 }}
-            className="text-lg md:text-xl text-muted-foreground max-w-xl"
+            transition={{ duration: 0.7, delay: 0.2 }}
+            className="text-lg text-muted-foreground max-w-md"
           >
             {t.subtitle}
           </motion.p>
         </div>
 
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8 md:gap-12">
+        {/* Products grid — no cards, just floating images */}
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-20 md:gap-x-12 md:gap-y-32">
           {products.map((product, i) => (
             <ProductCard key={product.id} product={product} index={i} />
           ))}
