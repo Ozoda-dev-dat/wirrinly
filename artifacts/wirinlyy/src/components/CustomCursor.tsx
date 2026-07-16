@@ -1,19 +1,24 @@
 import { useEffect, useState } from 'react';
 import { motion } from 'framer-motion';
 
+function useIsTouch() {
+  const [isTouch, setIsTouch] = useState(false);
+  useEffect(() => {
+    setIsTouch(window.matchMedia('(pointer: coarse)').matches);
+  }, []);
+  return isTouch;
+}
+
 export function CustomCursor() {
-  const [mousePosition, setMousePosition] = useState({
-    x: 0,
-    y: 0,
-  });
+  const isTouch = useIsTouch();
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 });
   const [isHovering, setIsHovering] = useState(false);
 
   useEffect(() => {
+    if (isTouch) return;
+
     const updateMousePosition = (e: MouseEvent) => {
-      setMousePosition({
-        x: e.clientX,
-        y: e.clientY,
-      });
+      setMousePosition({ x: e.clientX, y: e.clientY });
     };
 
     const updateHoverState = (e: MouseEvent) => {
@@ -39,7 +44,10 @@ export function CustomCursor() {
       window.removeEventListener('mousemove', updateMousePosition);
       window.removeEventListener('mouseover', updateHoverState);
     };
-  }, []);
+  }, [isTouch]);
+
+  // Don't render on touch devices
+  if (isTouch) return null;
 
   return (
     <>

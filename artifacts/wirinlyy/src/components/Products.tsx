@@ -160,7 +160,7 @@ export function Products() {
         </div>
 
         {/* Products grid — no cards, just floating images */}
-        <div className="grid grid-cols-2 md:grid-cols-4 gap-x-8 gap-y-20 md:gap-x-12 md:gap-y-32">
+        <div className="grid grid-cols-1 xs:grid-cols-2 sm:grid-cols-2 md:grid-cols-4 gap-x-6 gap-y-14 sm:gap-x-8 sm:gap-y-20 md:gap-x-12 md:gap-y-32">
           {products.map((product, i) => (
             <ProductCard key={product.id} product={product} index={i} />
           ))}

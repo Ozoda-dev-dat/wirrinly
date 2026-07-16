@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence, useAnimation } from 'framer-motion';
+import { motion, AnimatePresence } from 'framer-motion';
 import { useAppStore } from '@/store/useAppStore';
 import { translations } from '@/lib/translations';
 
@@ -22,10 +22,10 @@ interface HeroProps { onOrderClick: () => void }
 // ─── Ingredient definition ────────────────────────────────────────────────────
 interface Ing {
   src: string;
-  /** Final position relative to scene center (px) */
+  /** Final position relative to scene center (px) — at reference scale 1.0 */
   x: number;
   y: number;
-  /** px — larger = closer to camera */
+  /** px — larger = closer to camera — at reference scale 1.0 */
   size: number;
   /** seconds */
   delay: number;
@@ -50,21 +50,17 @@ const SCENES: {
     img: mixFruitImg,
     name: 'Mix Fruit Cake',
     items: [
-      // bananas — large, foreground
       { src: bananaImg,  x:  -320, y:  130, size: 170, delay: 0,    rot: -55,  dof: 2.5, front: false },
       { src: bananaImg,  x:   260, y:  145, size: 140, delay: 0.12, rot:  60,  dof: 1.5, front: true  },
-      // mangoes
       { src: mangoImg,   x:  -270, y:  -30, size: 110, delay: 0.07, rot:  20,  front: false },
       { src: mangoImg,   x:   290, y:  -90, size: 95,  delay: 0.2,  rot: -18,  front: false },
       { src: mangoImg,   x:    60, y:  200, size: 80,  delay: 0.32, rot:  10,  dof: 1,  front: false },
-      // oranges
       { src: orangeImg,  x:  -190, y: -175, size: 100, delay: 0.15, rot:   0,  front: false },
       { src: orangeImg,  x:   350, y:   55, size: 85,  delay: 0.25, rot:   0,  dof: 2, front: true  },
       { src: orangeImg,  x:  -380, y:  -90, size: 70,  delay: 0.38, rot:   0,  dof: 3, front: false },
-      // kiwis
       { src: kiwiImg,    x:  -100, y:  185, size: 95,  delay: 0.1,  rot: -25,  front: false },
       { src: kiwiImg,    x:   330, y: -145, size: 80,  delay: 0.18, rot:  35,  front: false },
-      { src: kiwiImg,    x:  -340, y:  -200, size: 65, delay: 0.4,  rot:  12,  dof: 2, front: false },
+      { src: kiwiImg,    x:  -340, y: -200, size: 65,  delay: 0.4,  rot:  12,  dof: 2, front: false },
     ],
   },
 
@@ -74,14 +70,12 @@ const SCENES: {
     img: teddyCakeImg,
     name: 'Teddy Cake',
     items: [
-      // chocolate chunks — large close pieces
       { src: chocChunkImg, x:  -300, y:   90, size: 145, delay: 0,    rot: -22, dof: 3,  front: false },
       { src: chocChunkImg, x:   270, y:  120, size: 120, delay: 0.08, rot:  30, dof: 2,  front: true  },
       { src: chocChunkImg, x:   -60, y:  210, size: 100, delay: 0.16, rot: -10, dof: 1,  front: false },
       { src: chocChunkImg, x:   190, y:  -80, size: 90,  delay: 0.05, rot:  15,           front: false },
       { src: chocChunkImg, x:  -340, y: -110, size: 75,  delay: 0.28, rot: -35, dof: 2,  front: false },
       { src: chocChunkImg, x:   360, y:  -30, size: 65,  delay: 0.35, rot:  40, dof: 1.5,front: false },
-      // almonds — smaller, scattered
       { src: almondImg, x:  -170, y:  185, size: 80,  delay: 0.12, rot: -40,  front: false },
       { src: almondImg, x:   120, y:  200, size: 68,  delay: 0.22, rot:  25,  front: true  },
       { src: almondImg, x:   310, y:  160, size: 58,  delay: 0.3,  rot: -15,  dof: 1.5, front: false },
@@ -96,7 +90,6 @@ const SCENES: {
     img: strawberryCakeImg,
     name: 'Strawberry Cake',
     items: [
-      // large close raspberries / strawberries
       { src: raspberryImg, x:  -60,  y: -160, size: 160, delay: 0,    rot:  -5, dof: 3,  front: false },
       { src: raspberryImg, x:  170,  y:  -80, size: 135, delay: 0.07, rot:  12, dof: 2,  front: true  },
       { src: raspberryImg, x: -270,  y:   40, size: 115, delay: 0.14, rot: -20, dof: 1.5,front: false },
@@ -112,30 +105,32 @@ const SCENES: {
 ];
 
 // ─── Single falling ingredient ────────────────────────────────────────────────
-function FallingItem({ item, sceneId }: { item: Ing; sceneId: string }) {
-  // Start far above at the same final X — purely vertical fall
-  const startY = item.y - 680 - Math.random() * 120;
+function FallingItem({ item, sceneId, factor }: { item: Ing; sceneId: string; factor: number }) {
+  const x    = item.x    * factor;
+  const y    = item.y    * factor;
+  const size = item.size * factor;
+  const startY = y - (480 + Math.random() * 100) * factor;
 
   return (
     <motion.div
       key={sceneId + item.x + item.y}
       initial={{
-        x: item.x,
+        x,
         y: startY,
         rotate: item.rot + (Math.random() > 0.5 ? 45 : -45),
         opacity: 0,
         filter: 'blur(14px)',
       }}
       animate={{
-        x: item.x,
-        y: [startY, item.y + 18, item.y],   // slight bounce on land
+        x,
+        y: [startY, y + 14 * factor, y],
         rotate: [item.rot + (Math.random() > 0.5 ? 45 : -45), item.rot - 5, item.rot],
         opacity: [0, 1, 1],
         filter: [`blur(14px)`, `blur(${(item.dof ?? 0) + 1}px)`, `blur(${item.dof ?? 0}px)`],
       }}
       exit={{
         opacity: 0,
-        y: item.y + 40,
+        y: y + 40 * factor,
         filter: 'blur(8px)',
         transition: { duration: 0.4, ease: 'easeIn' },
       }}
@@ -152,7 +147,7 @@ function FallingItem({ item, sceneId }: { item: Ing; sceneId: string }) {
       {/* Idle float after settling */}
       <motion.div
         animate={{
-          y: [0, -10, 3, -6, 0],
+          y: [0, -8 * factor, 2 * factor, -5 * factor, 0],
           rotate: [item.rot, item.rot + 3, item.rot - 2, item.rot],
         }}
         transition={{
@@ -162,16 +157,16 @@ function FallingItem({ item, sceneId }: { item: Ing; sceneId: string }) {
           delay: item.delay + 1.2,
         }}
         style={{
-          marginLeft: -(item.size / 2),
-          marginTop: -(item.size / 2),
-          filter: `drop-shadow(0 16px 32px rgba(0,0,0,0.55))`,
+          marginLeft: -(size / 2),
+          marginTop: -(size / 2),
+          filter: `drop-shadow(0 ${12 * factor}px ${24 * factor}px rgba(0,0,0,0.55))`,
         }}
       >
         <img
           src={item.src}
           alt=""
-          width={item.size}
-          height={item.size}
+          width={size}
+          height={size}
           draggable={false}
           style={{ objectFit: 'contain', display: 'block' }}
         />
@@ -185,6 +180,24 @@ export function Hero({ onOrderClick }: HeroProps) {
   const { lang } = useAppStore();
   const t = translations[lang].hero;
   const [idx, setIdx] = useState(0);
+  const containerRef = useRef<HTMLDivElement>(null);
+  const [factor, setFactor] = useState(1);
+
+  // Reference width for ingredient positions
+  const REFERENCE_WIDTH = 860;
+
+  useEffect(() => {
+    const updateFactor = () => {
+      if (containerRef.current) {
+        const w = containerRef.current.offsetWidth;
+        // Scale down for small screens, cap at 1.0 for large
+        setFactor(Math.min(1, Math.max(0.32, w / REFERENCE_WIDTH)));
+      }
+    };
+    updateFactor();
+    window.addEventListener('resize', updateFactor);
+    return () => window.removeEventListener('resize', updateFactor);
+  }, []);
 
   const scene = SCENES[idx];
   const backItems  = scene.items.filter(i => !i.front);
@@ -195,8 +208,11 @@ export function Hero({ onOrderClick }: HeroProps) {
     return () => clearInterval(iv);
   }, []);
 
+  // Composition height scales with factor
+  const compHeight = Math.max(260, Math.min(520, 480 * factor + 60));
+
   return (
-    <section className="relative min-h-[100dvh] w-full flex items-center justify-center overflow-hidden bg-background pt-20">
+    <section className="relative min-h-[100dvh] w-full flex items-center justify-center overflow-hidden bg-background pt-16 md:pt-20">
 
       {/* Ambient glow */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
@@ -207,28 +223,29 @@ export function Hero({ onOrderClick }: HeroProps) {
             animate={{ opacity: 0.18, scale: 1 }}
             exit={{ opacity: 0, scale: 1.5 }}
             transition={{ duration: 2.5 }}
-            className="w-[60vw] h-[60vw] rounded-full"
+            className="w-[80vw] h-[80vw] md:w-[60vw] md:h-[60vw] rounded-full"
             style={{
               background: 'radial-gradient(circle, hsl(345 75% 60%) 0%, transparent 70%)',
-              filter: 'blur(100px)',
+              filter: 'blur(80px)',
             }}
           />
         </AnimatePresence>
       </div>
 
-      <div className="container relative z-10 flex flex-col items-center justify-center px-4">
+      <div className="container relative z-10 flex flex-col items-center justify-center px-4 w-full">
 
         {/* ── Composition ── */}
         <div
+          ref={containerRef}
           className="relative w-full max-w-5xl flex items-center justify-center"
-          style={{ height: '60vh', minHeight: 380 }}
+          style={{ height: compHeight }}
         >
           {/* Layer 1 — back ingredients */}
           <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
             <AnimatePresence mode="wait">
               <div key={scene.id + '-back'} className="absolute inset-0 flex items-center justify-center">
                 {backItems.map((item, i) => (
-                  <FallingItem key={`b-${scene.id}-${i}`} item={item} sceneId={scene.id} />
+                  <FallingItem key={`b-${scene.id}-${i}`} item={item} sceneId={scene.id} factor={factor} />
                 ))}
               </div>
             </AnimatePresence>
@@ -260,8 +277,8 @@ export function Hero({ onOrderClick }: HeroProps) {
                 transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1] }}
                 className="object-contain"
                 style={{
-                  height: '82%',
-                  maxHeight: 480,
+                  height: '80%',
+                  maxHeight: compHeight * 0.82,
                   filter: 'drop-shadow(0 28px 55px rgba(0,0,0,0.72))',
                 }}
               />
@@ -273,7 +290,7 @@ export function Hero({ onOrderClick }: HeroProps) {
             <AnimatePresence mode="wait">
               <div key={scene.id + '-front'} className="absolute inset-0 flex items-center justify-center">
                 {frontItems.map((item, i) => (
-                  <FallingItem key={`f-${scene.id}-${i}`} item={item} sceneId={scene.id} />
+                  <FallingItem key={`f-${scene.id}-${i}`} item={item} sceneId={scene.id} factor={factor} />
                 ))}
               </div>
             </AnimatePresence>
@@ -289,7 +306,7 @@ export function Hero({ onOrderClick }: HeroProps) {
             </h1>
           </div>
 
-          {/* Product name — prominent animated title */}
+          {/* Product name */}
           <div className="absolute bottom-0 left-0 right-0 z-[60] pointer-events-none flex flex-col items-center gap-1">
             <AnimatePresence mode="wait">
               <motion.div
@@ -300,7 +317,6 @@ export function Hero({ onOrderClick }: HeroProps) {
                 transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
                 className="flex flex-col items-center gap-[3px]"
               >
-                {/* decorative line */}
                 <motion.div
                   initial={{ scaleX: 0 }}
                   animate={{ scaleX: 1 }}
@@ -310,7 +326,7 @@ export function Hero({ onOrderClick }: HeroProps) {
                   style={{ background: 'hsl(345 75% 62% / 0.6)' }}
                 />
                 <span
-                  className="text-sm md:text-lg font-serif font-bold tracking-[0.18em] uppercase"
+                  className="text-xs sm:text-sm md:text-lg font-serif font-bold tracking-[0.18em] uppercase"
                   style={{ color: 'hsl(345 75% 80%)' }}
                 >
                   {scene.name}
@@ -333,28 +349,28 @@ export function Hero({ onOrderClick }: HeroProps) {
           initial={{ opacity: 0, y: 26 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 1, delay: 0.45 }}
-          className="flex flex-col items-center text-center z-30 mt-3"
+          className="flex flex-col items-center text-center z-30 mt-4 md:mt-3 px-4 w-full"
         >
-          <h2 className="text-xl md:text-4xl font-serif font-bold text-foreground mb-3 max-w-2xl leading-snug">
+          <h2 className="text-lg sm:text-xl md:text-4xl font-serif font-bold text-foreground mb-2 md:mb-3 max-w-2xl leading-snug">
             {t.headline}
           </h2>
-          <p className="text-[11px] md:text-sm text-muted-foreground uppercase tracking-[0.3em] mb-8">
+          <p className="text-[10px] sm:text-[11px] md:text-sm text-muted-foreground uppercase tracking-[0.25em] md:tracking-[0.3em] mb-6 md:mb-8">
             {t.tagline}
           </p>
 
-          <div className="flex items-center gap-4">
+          <div className="flex items-center gap-3 flex-wrap justify-center">
             <motion.button
               onClick={onOrderClick}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.96 }}
-              className="px-8 py-4 text-sm font-bold uppercase tracking-widest text-white rounded-full cursor-hover"
+              className="px-6 sm:px-8 py-3 sm:py-4 text-xs sm:text-sm font-bold uppercase tracking-widest text-white rounded-full cursor-hover"
               style={{ background: 'hsl(345 75% 62%)' }}
             >
               {t.cta}
             </motion.button>
             <a
               href="#products"
-              className="px-8 py-4 text-sm font-bold uppercase tracking-widest rounded-full cursor-hover"
+              className="px-6 sm:px-8 py-3 sm:py-4 text-xs sm:text-sm font-bold uppercase tracking-widest rounded-full cursor-hover"
               style={{ border: '1px solid hsl(345 75% 62% / 0.4)', color: 'hsl(345 75% 72%)' }}
             >
               {lang === 'uz' ? "Ko'rish" : 'Смотреть'}
@@ -363,7 +379,7 @@ export function Hero({ onOrderClick }: HeroProps) {
         </motion.div>
 
         {/* Slide indicators */}
-        <div className="flex gap-2 mt-7 z-30">
+        <div className="flex gap-2 mt-5 md:mt-7 z-30 pb-6">
           {SCENES.map((_, i) => (
             <button
               key={i}
