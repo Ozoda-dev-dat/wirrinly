@@ -1,7 +1,9 @@
 import { motion } from 'framer-motion';
 import { useState } from 'react';
 import { useAppStore } from '@/store/useAppStore';
-import { products } from '@/lib/data';
+import { products, drinks } from '@/lib/data';
+
+const allItems = [...products, ...drinks];
 
 interface OrderModalProps {
   onClose: () => void;
@@ -12,12 +14,12 @@ export function OrderModal({ onClose, defaultProduct }: OrderModalProps) {
   const { lang } = useAppStore();
   const [name, setName] = useState('');
   const [phone, setPhone] = useState('');
-  const [selectedProduct, setSelectedProduct] = useState(defaultProduct || products[0].id);
+  const [selectedProduct, setSelectedProduct] = useState(defaultProduct || allItems[0].id);
   const [qty, setQty] = useState(1);
   const [notes, setNotes] = useState('');
   const [sent, setSent] = useState(false);
 
-  const product = products.find((p) => p.id === selectedProduct)!;
+  const product = allItems.find((p) => p.id === selectedProduct)!;
 
   const uz = {
     title: 'Buyurtma berish',
@@ -184,7 +186,7 @@ export function OrderModal({ onClose, defaultProduct }: OrderModalProps) {
                       border: '1px solid hsl(340 25% 77%)',
                     }}
                   >
-                    {products.map((p) => (
+                    {allItems.map((p) => (
                       <option key={p.id} value={p.id} style={{ background: 'hsl(340 70% 95%)' }}>
                         {p.name} — {p.price.toLocaleString()} UZS
                       </option>
