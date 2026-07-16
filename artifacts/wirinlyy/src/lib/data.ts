@@ -19,6 +19,13 @@ export const products = [
 
 export const coloredCollection = coloredCollectionImg;
 
+export const drinks: { id: string; name: string; price: number; image: string | null }[] = [
+  { id: 'drink-1', name: 'Ichimlik 1', price: 25000, image: null },
+  { id: 'drink-2', name: 'Ichimlik 2', price: 25000, image: null },
+  { id: 'drink-3', name: 'Ichimlik 3', price: 25000, image: null },
+  { id: 'drink-4', name: 'Ichimlik 4', price: 25000, image: null },
+];
+
 export const heroProducts = [
   { id: 'teddy', image: teddyCakeImg, name: 'Teddy Cake' },
   { id: 'strawberry', image: strawberryCakeImg, name: 'Strawberry Cake' },

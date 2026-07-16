@@ -8,6 +8,7 @@ import { CustomCursor } from '@/components/CustomCursor';
 import { Navbar } from '@/components/Navbar';
 import { Hero } from '@/components/Hero';
 import { Products } from '@/components/Products';
+import { Drinks } from '@/components/Drinks';
 import { About } from '@/components/About';
 import { Contact } from '@/components/Contact';
 import { OrderModal } from '@/components/OrderModal';
@@ -30,6 +31,7 @@ function App() {
           <main>
             <Hero onOrderClick={() => setOrderOpen(true)} />
             <Products />
+            <Drinks />
             <About />
           </main>
 

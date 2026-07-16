@@ -7,6 +7,7 @@ export const translations = {
     },
     nav: {
       products: "Mahsulotlar",
+      drinks: "Ichimliklar",
       about: "Biz haqimizda",
       contact: "Aloqa"
     },
@@ -49,6 +50,7 @@ export const translations = {
     },
     nav: {
       products: "Продукты",
+      drinks: "Напитки",
       about: "О нас",
       contact: "Контакты"
     },
