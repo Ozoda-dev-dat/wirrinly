@@ -1,0 +1,27 @@
+kind = "web"
+previewPath = "/"
+title = "wirinlyy"
+version = "1.0.0"
+id = "artifacts/wirinlyy"
+router = "path"
+
+[[services]]
+name = "web"
+paths = [ "/" ]
+localPort = 22058
+
+[services.development]
+run = "pnpm --filter @workspace/wirinlyy run dev"
+
+[services.production]
+build = [ "pnpm", "--filter", "@workspace/wirinlyy", "run", "build" ]
+serve = "static"
+publicDir = "artifacts/wirinlyy/dist/public"
+
+[[services.production.rewrites]]
+from = "/*"
+to = "/index.html"
+
+[services.env]
+PORT = "22058"
+BASE_PATH = "/"
