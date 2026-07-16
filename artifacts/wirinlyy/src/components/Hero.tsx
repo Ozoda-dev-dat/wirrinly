@@ -2,163 +2,58 @@ import { useState, useEffect } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
 import { useAppStore } from '@/store/useAppStore';
 import { translations } from '@/lib/translations';
+
+// Product images
 import mixFruitImg from '@assets/image_1784181113262.png';
 import teddyCakeImg from '@assets/image_1784181137829.png';
 import strawberryCakeImg from '@assets/image_1784181073927.png';
+
+// Real fruit photos (transparent background)
+import kiwiImg from '@/assets/fruits/kiwi.png';
+import bananaImg from '@/assets/fruits/banana.png';
+import mangoImg from '@/assets/fruits/mango.png';
+import orangeImg from '@/assets/fruits/orange.png';
+import strawberryImg from '@/assets/fruits/strawberry.png';
+import chocDropImg from '@/assets/fruits/choc-drop.png';
 
 interface HeroProps {
   onOrderClick: () => void;
 }
 
-// ─── SVG Ingredient shapes ────────────────────────────────────────────────────
-
-function KiwiSlice({ size = 52 }: { size?: number }) {
-  const r = size / 2;
-  const pts = Array.from({ length: 10 }, (_, i) => {
-    const a = (i * 36 * Math.PI) / 180;
-    return { x2: r + Math.cos(a) * (r * 0.62), y2: r + Math.sin(a) * (r * 0.62) };
-  });
-  return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ display: 'block' }}>
-      <circle cx={r} cy={r} r={r - 1} fill="#66BB6A" stroke="#388E3C" strokeWidth={size * 0.04} />
-      <circle cx={r} cy={r} r={r * 0.62} fill="#F1F8E9" />
-      <circle cx={r} cy={r} r={r * 0.18} fill="#5D4037" />
-      {pts.map((p, i) => (
-        <line key={i} x1={r} y1={r} x2={p.x2} y2={p.y2} stroke="#81C784" strokeWidth={size * 0.04} opacity={0.7} />
-      ))}
-    </svg>
-  );
-}
-
-function Banana({ size = 70 }: { size?: number }) {
-  const s = size / 70;
-  return (
-    <svg width={size} height={size * 0.55} viewBox="0 0 70 38" style={{ display: 'block' }}>
-      <path
-        d="M6 32 C10 14, 28 4, 50 6 C65 7, 68 16, 64 20 C60 8, 36 8, 12 30 Z"
-        fill="#FFD54F"
-        stroke="#F9A825"
-        strokeWidth={1.5 / s}
-      />
-      <path
-        d="M12 30 C36 8, 60 8, 64 20 C58 18, 34 14, 10 36 Z"
-        fill="#FFCA28"
-      />
-    </svg>
-  );
-}
-
-function MangoSlice({ size = 56 }: { size?: number }) {
-  const r = size / 2;
-  return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ display: 'block' }}>
-      <ellipse cx={r} cy={r * 1.05} rx={r - 2} ry={r - 3} fill="#FF8F00" stroke="#E65100" strokeWidth={size * 0.04} />
-      <ellipse cx={r} cy={r} rx={r * 0.65} ry={r * 0.72} fill="#FFD740" />
-      <ellipse cx={r * 0.85} cy={r * 0.82} rx={r * 0.12} ry={r * 0.16} fill="#FF8F00" opacity={0.5} transform={`rotate(-30, ${r * 0.85}, ${r * 0.82})`} />
-    </svg>
-  );
-}
-
-function OrangeSlice({ size = 52 }: { size?: number }) {
-  const r = size / 2;
-  const segments = 8;
-  return (
-    <svg width={size} height={size} viewBox={`0 0 ${size} ${size}`} style={{ display: 'block' }}>
-      <circle cx={r} cy={r} r={r - 1} fill="#FF7043" stroke="#E64A19" strokeWidth={size * 0.035} />
-      <circle cx={r} cy={r} r={r * 0.78} fill="#FFAB91" />
-      {Array.from({ length: segments }, (_, i) => {
-        const a = ((i * 360) / segments) * (Math.PI / 180);
-        return (
-          <line key={i} x1={r} y1={r}
-            x2={r + Math.cos(a) * (r * 0.76)} y2={r + Math.sin(a) * (r * 0.76)}
-            stroke="#FF7043" strokeWidth={size * 0.035} opacity={0.6}
-          />
-        );
-      })}
-      <circle cx={r} cy={r} r={r * 0.12} fill="#FF7043" />
-    </svg>
-  );
-}
-
-function Strawberry({ size = 56 }: { size?: number }) {
-  const w = size;
-  const h = size * 1.1;
-  return (
-    <svg width={w} height={h} viewBox="0 0 56 62" style={{ display: 'block' }}>
-      {/* leaves */}
-      <path d="M28 10 C22 2, 12 4, 14 12 C16 6, 24 8, 28 10Z" fill="#43A047" />
-      <path d="M28 10 C34 2, 44 4, 42 12 C40 6, 32 8, 28 10Z" fill="#43A047" />
-      <path d="M28 10 C24 0, 28 -4, 32 0 C30 2, 28 6, 28 10Z" fill="#66BB6A" />
-      {/* body */}
-      <path d="M14 20 C10 28, 12 42, 28 58 C44 42, 46 28, 42 20 C38 14, 18 14, 14 20Z" fill="#E53935" />
-      <path d="M16 22 C13 30, 15 42, 28 56 C28 56, 26 40, 24 32 C22 26, 18 22, 16 22Z" fill="#EF5350" opacity={0.5} />
-      {/* seeds */}
-      {[[22,28],[32,26],[20,36],[30,38],[26,46]].map(([x,y],i) => (
-        <ellipse key={i} cx={x} cy={y} rx={1.8} ry={2.5} fill="#FFCDD2" opacity={0.8} transform={`rotate(-15,${x},${y})`} />
-      ))}
-    </svg>
-  );
-}
-
-function ChocolateDrop({ size = 44 }: { size?: number }) {
-  return (
-    <svg width={size} height={size * 1.4} viewBox="0 0 44 62" style={{ display: 'block' }}>
-      <path d="M22 4 C22 4, 6 26, 6 38 C6 50, 13 58, 22 58 C31 58, 38 50, 38 38 C38 26, 22 4, 22 4Z"
-        fill="#4E342E" stroke="#3E2723" strokeWidth="1.5" />
-      <path d="M22 12 C22 12, 10 30, 10 38 C10 48, 15 54, 22 54 C22 54, 18 48, 18 38 C18 30, 22 12, 22 12Z"
-        fill="#6D4C41" opacity={0.5} />
-      <ellipse cx="27" cy="28" rx="4" ry="7" fill="#795548" opacity={0.35} transform="rotate(-20,27,28)" />
-    </svg>
-  );
-}
-
-// ─── Ingredient configs per product ──────────────────────────────────────────
-
-type IngredientType = 'kiwi' | 'banana' | 'mango' | 'orange' | 'strawberry' | 'choc';
+// ─── Ingredient configs ───────────────────────────────────────────────────────
 
 interface IngredientItem {
-  type: IngredientType;
-  x: number;   // final x offset from center (px)
-  y: number;   // final y offset from center (px)
-  size: number;
+  src: string;
+  x: number;        // final x offset from center (px)
+  y: number;        // final y offset from center (px)
+  size: number;     // width in px
   delay: number;
   rotation: number;
-  zFront?: boolean; // render in front of the product image
-}
-
-function renderIngredient(type: IngredientType, size: number) {
-  switch (type) {
-    case 'kiwi': return <KiwiSlice size={size} />;
-    case 'banana': return <Banana size={size} />;
-    case 'mango': return <MangoSlice size={size} />;
-    case 'orange': return <OrangeSlice size={size} />;
-    case 'strawberry': return <Strawberry size={size} />;
-    case 'choc': return <ChocolateDrop size={size} />;
-  }
+  zFront?: boolean; // render in front of product image
 }
 
 const HERO_PRODUCTS: {
   id: string;
   image: string;
   name: string;
-  ingredients: IngredientItem[];
   special?: 'choc-rain';
+  ingredients: IngredientItem[];
 }[] = [
   {
     id: 'mix-fruit',
     image: mixFruitImg,
     name: 'Mix Fruit Cake',
     ingredients: [
-      { type: 'kiwi',    x: -340, y: -60,  size: 62, delay: 0,    rotation: -25,  zFront: false },
-      { type: 'kiwi',    x:  300, y:  90,  size: 48, delay: 0.08, rotation:  35,  zFront: true  },
-      { type: 'kiwi',    x: -180, y:  180, size: 40, delay: 0.22, rotation:  10,  zFront: false },
-      { type: 'banana',  x: -290, y:  110, size: 82, delay: 0.12, rotation: -50,  zFront: false },
-      { type: 'banana',  x:  240, y:  160, size: 68, delay: 0.18, rotation:  55,  zFront: true  },
-      { type: 'mango',   x:  310, y: -130, size: 58, delay: 0.05, rotation:  20,  zFront: false },
-      { type: 'mango',   x: -340, y: -180, size: 46, delay: 0.28, rotation: -40,  zFront: false },
-      { type: 'orange',  x: -200, y: -170, size: 54, delay: 0.15, rotation:   0,  zFront: true  },
-      { type: 'orange',  x:  360, y:  40,  size: 44, delay: 0.25, rotation:   0,  zFront: false },
-      { type: 'orange',  x:  150, y: -200, size: 38, delay: 0.32, rotation:   0,  zFront: true  },
+      { src: kiwiImg,   x: -340, y: -70,  size: 90,  delay: 0,    rotation: -20, zFront: false },
+      { src: kiwiImg,   x:  290, y:  110, size: 72,  delay: 0.08, rotation:  35, zFront: true  },
+      { src: kiwiImg,   x: -170, y:  190, size: 60,  delay: 0.22, rotation:  10, zFront: false },
+      { src: bananaImg, x: -300, y:  100, size: 130, delay: 0.12, rotation: -50, zFront: false },
+      { src: bananaImg, x:  230, y:  160, size: 110, delay: 0.18, rotation:  55, zFront: true  },
+      { src: mangoImg,  x:  320, y: -130, size: 88,  delay: 0.05, rotation:  18, zFront: false },
+      { src: mangoImg,  x: -350, y: -180, size: 70,  delay: 0.28, rotation: -38, zFront: false },
+      { src: orangeImg, x: -200, y: -175, size: 80,  delay: 0.15, rotation:   0, zFront: true  },
+      { src: orangeImg, x:  370, y:   50, size: 68,  delay: 0.25, rotation:   0, zFront: false },
+      { src: orangeImg, x:  150, y: -205, size: 58,  delay: 0.32, rotation:   0, zFront: true  },
     ],
   },
   {
@@ -167,14 +62,14 @@ const HERO_PRODUCTS: {
     name: 'Teddy Cake',
     special: 'choc-rain',
     ingredients: [
-      { type: 'choc', x: -280, y:  80,  size: 50, delay: 0,    rotation:  10, zFront: false },
-      { type: 'choc', x: -140, y:  160, size: 40, delay: 0.1,  rotation: -15, zFront: false },
-      { type: 'choc', x:   60, y:  180, size: 44, delay: 0.05, rotation:   5, zFront: true  },
-      { type: 'choc', x:  200, y:  100, size: 36, delay: 0.15, rotation:  20, zFront: false },
-      { type: 'choc', x:  320, y: -30,  size: 52, delay: 0.08, rotation: -10, zFront: false },
-      { type: 'choc', x: -320, y: -50,  size: 42, delay: 0.2,  rotation:  15, zFront: true  },
-      { type: 'choc', x:  100, y: -200, size: 34, delay: 0.25, rotation:  -5, zFront: false },
-      { type: 'choc', x: -100, y: -180, size: 46, delay: 0.12, rotation:   8, zFront: false },
+      { src: chocDropImg, x: -290, y:  90,  size: 70, delay: 0,    rotation:  10, zFront: false },
+      { src: chocDropImg, x: -140, y:  170, size: 55, delay: 0.1,  rotation: -15, zFront: false },
+      { src: chocDropImg, x:   60, y:  190, size: 62, delay: 0.05, rotation:   5, zFront: true  },
+      { src: chocDropImg, x:  200, y:  100, size: 48, delay: 0.15, rotation:  22, zFront: false },
+      { src: chocDropImg, x:  330, y:  -20, size: 72, delay: 0.08, rotation: -10, zFront: false },
+      { src: chocDropImg, x: -330, y:  -40, size: 58, delay: 0.2,  rotation:  16, zFront: true  },
+      { src: chocDropImg, x:  110, y: -200, size: 44, delay: 0.25, rotation:  -6, zFront: false },
+      { src: chocDropImg, x: -100, y: -190, size: 66, delay: 0.12, rotation:   9, zFront: false },
     ],
   },
   {
@@ -182,20 +77,20 @@ const HERO_PRODUCTS: {
     image: strawberryCakeImg,
     name: 'Strawberry Cake',
     ingredients: [
-      { type: 'strawberry', x: -350, y: -80,  size: 64, delay: 0,    rotation: -20, zFront: false },
-      { type: 'strawberry', x:  310, y: -110, size: 52, delay: 0.07, rotation:  25, zFront: false },
-      { type: 'strawberry', x: -260, y:  140, size: 56, delay: 0.14, rotation: -40, zFront: false },
-      { type: 'strawberry', x:  280, y:  130, size: 60, delay: 0.1,  rotation:  15, zFront: true  },
-      { type: 'strawberry', x: -160, y: -200, size: 44, delay: 0.2,  rotation:  -8, zFront: false },
-      { type: 'strawberry', x:  360, y:  60,  size: 38, delay: 0.25, rotation:  30, zFront: true  },
-      { type: 'strawberry', x:  120, y:  200, size: 48, delay: 0.05, rotation: -25, zFront: false },
-      { type: 'strawberry', x: -380, y:  30,  size: 40, delay: 0.3,  rotation:  10, zFront: false },
-      { type: 'strawberry', x:  200, y: -200, size: 34, delay: 0.18, rotation: -50, zFront: true  },
+      { src: strawberryImg, x: -360, y: -85,  size: 88,  delay: 0,    rotation: -18, zFront: false },
+      { src: strawberryImg, x:  315, y: -115, size: 74,  delay: 0.07, rotation:  22, zFront: false },
+      { src: strawberryImg, x: -265, y:  145, size: 80,  delay: 0.14, rotation: -38, zFront: false },
+      { src: strawberryImg, x:  285, y:  135, size: 92,  delay: 0.1,  rotation:  14, zFront: true  },
+      { src: strawberryImg, x: -165, y: -205, size: 62,  delay: 0.2,  rotation:  -8, zFront: false },
+      { src: strawberryImg, x:  370, y:   65, size: 56,  delay: 0.25, rotation:  28, zFront: true  },
+      { src: strawberryImg, x:  125, y:  205, size: 70,  delay: 0.05, rotation: -22, zFront: false },
+      { src: strawberryImg, x: -385, y:   35, size: 58,  delay: 0.3,  rotation:  10, zFront: false },
+      { src: strawberryImg, x:  205, y: -205, size: 48,  delay: 0.18, rotation: -48, zFront: true  },
     ],
   },
 ];
 
-// ─── Floating Ingredient ──────────────────────────────────────────────────────
+// ─── Single floating ingredient ───────────────────────────────────────────────
 
 function FloatingIngredient({
   item,
@@ -206,49 +101,50 @@ function FloatingIngredient({
   productKey: string;
   isChocRain?: boolean;
 }) {
-  // For choc-rain: drops fall from very top (high negative y) then settle
-  const initialY = isChocRain ? item.y - 600 : 0;
+  // Choc-rain: drops fall from high above
+  const initialY = isChocRain ? item.y - 700 : 0;
 
   return (
     <motion.div
       key={`${productKey}-${item.x}-${item.y}`}
-      initial={{ x: 0, y: initialY, scale: 0, opacity: 0, rotate: item.rotation - 30 }}
-      animate={{
-        x: item.x,
-        y: item.y,
-        scale: 1,
-        opacity: [0, 1, 1],
-        rotate: item.rotation,
-      }}
-      exit={{ x: 0, y: 0, scale: 0, opacity: 0 }}
+      initial={{ x: 0, y: initialY, scale: 0, opacity: 0, rotate: item.rotation - 25 }}
+      animate={{ x: item.x, y: item.y, scale: 1, opacity: 1, rotate: item.rotation }}
+      exit={{ x: 0, y: 0, scale: 0, opacity: 0, transition: { duration: 0.35 } }}
       transition={{
         delay: item.delay,
-        duration: isChocRain ? 0.9 : 0.75,
-        ease: isChocRain ? [0.2, 0.8, 0.4, 1.2] : [0.16, 1, 0.3, 1],
-        opacity: { duration: 0.3, delay: item.delay },
+        duration: isChocRain ? 1.0 : 0.8,
+        ease: isChocRain ? [0.2, 0.9, 0.4, 1.1] : [0.16, 1, 0.3, 1],
+        opacity: { duration: 0.25, delay: item.delay },
       }}
       className="absolute pointer-events-none select-none"
-      style={{ left: '50%', top: '50%', transform: 'translate(-50%,-50%)' }}
+      style={{ left: '50%', top: '50%' }}
     >
-      {/* Gentle floating animation on top of the entrance */}
+      {/* Continuous gentle bob after entrance */}
       <motion.div
         animate={{
-          y: [0, -14, 0, 10, 0],
-          rotate: [item.rotation, item.rotation + 6, item.rotation - 4, item.rotation],
+          y: [0, -12, 4, -8, 0],
+          rotate: [item.rotation, item.rotation + 5, item.rotation - 3, item.rotation],
         }}
         transition={{
-          duration: 4 + Math.abs(item.x % 3),
+          duration: 4.5 + Math.abs(item.x % 2.5),
           repeat: Infinity,
           ease: 'easeInOut',
-          delay: item.delay + 0.8,
+          delay: item.delay + 0.9,
         }}
         style={{
-          filter: 'drop-shadow(0 8px 16px rgba(0,0,0,0.45))',
           marginLeft: -item.size / 2,
           marginTop: -item.size / 2,
+          filter: 'drop-shadow(0 12px 24px rgba(0,0,0,0.5))',
         }}
       >
-        {renderIngredient(item.type, item.size)}
+        <img
+          src={item.src}
+          alt=""
+          width={item.size}
+          height={item.size}
+          style={{ objectFit: 'contain', display: 'block' }}
+          draggable={false}
+        />
       </motion.div>
     </motion.div>
   );
@@ -281,21 +177,27 @@ export function Hero({ onOrderClick }: HeroProps) {
           <motion.div
             key={current.id + '-glow'}
             initial={{ opacity: 0, scale: 0.5 }}
-            animate={{ opacity: 0.22, scale: 1 }}
+            animate={{ opacity: 0.2, scale: 1 }}
             exit={{ opacity: 0, scale: 1.4 }}
             transition={{ duration: 2.5 }}
             className="w-[65vw] h-[65vw] rounded-full"
-            style={{ background: 'radial-gradient(circle, hsl(345 75% 62%) 0%, transparent 68%)', filter: 'blur(90px)' }}
+            style={{
+              background: 'radial-gradient(circle, hsl(345 75% 62%) 0%, transparent 68%)',
+              filter: 'blur(90px)',
+            }}
           />
         </AnimatePresence>
       </div>
 
       <div className="container relative z-10 flex flex-col items-center justify-center px-4">
 
-        {/* ── Composition: text + product + ingredients ── */}
-        <div className="relative w-full max-w-5xl flex items-center justify-center" style={{ height: '58vh', minHeight: 360 }}>
+        {/* ── Main composition ── */}
+        <div
+          className="relative w-full max-w-5xl flex items-center justify-center"
+          style={{ height: '58vh', minHeight: 360 }}
+        >
 
-          {/* LAYER 1 — back ingredients (behind product) */}
+          {/* LAYER 1 — back ingredients */}
           <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
             <AnimatePresence mode="wait">
               <div key={current.id + '-back'} className="absolute inset-0 flex items-center justify-center">
@@ -311,14 +213,14 @@ export function Hero({ onOrderClick }: HeroProps) {
             </AnimatePresence>
           </div>
 
-          {/* LAYER 2 — brand name outline (behind product) */}
+          {/* LAYER 2 — brand name outline */}
           <div className="absolute inset-0 flex items-center justify-center select-none z-20 pointer-events-none">
             <motion.h1
               initial={{ y: 30, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ duration: 1.2, ease: [0.16, 1, 0.3, 1] }}
               className="text-[13vw] md:text-[155px] font-serif font-black leading-none tracking-tighter"
-              style={{ WebkitTextStroke: '1.5px hsl(345 75% 62% / 0.45)', color: 'transparent' }}
+              style={{ WebkitTextStroke: '1.5px hsl(345 75% 62% / 0.4)', color: 'transparent' }}
             >
               wirinlyy
             </motion.h1>
@@ -345,7 +247,7 @@ export function Hero({ onOrderClick }: HeroProps) {
             </AnimatePresence>
           </div>
 
-          {/* LAYER 4 — front ingredients (in front of product) */}
+          {/* LAYER 4 — front ingredients */}
           <div className="absolute inset-0 flex items-center justify-center z-40 pointer-events-none">
             <AnimatePresence mode="wait">
               <div key={current.id + '-front'} className="absolute inset-0 flex items-center justify-center">
@@ -361,8 +263,8 @@ export function Hero({ onOrderClick }: HeroProps) {
             </AnimatePresence>
           </div>
 
-          {/* LAYER 5 — depth overlay on brand name */}
-          <div className="absolute inset-0 flex items-center justify-center select-none z-50 pointer-events-none mix-blend-overlay opacity-60">
+          {/* LAYER 5 — depth blend on name */}
+          <div className="absolute inset-0 flex items-center justify-center select-none z-50 pointer-events-none mix-blend-overlay opacity-50">
             <h1
               className="text-[13vw] md:text-[155px] font-serif font-black leading-none tracking-tighter"
               style={{ color: 'hsl(17 46% 8% / 0.5)' }}
@@ -372,7 +274,7 @@ export function Hero({ onOrderClick }: HeroProps) {
           </div>
 
           {/* Product name badge */}
-          <div className="absolute bottom-2 right-2 md:right-0 z-60 pointer-events-none">
+          <div className="absolute bottom-2 right-2 md:right-0 z-[60] pointer-events-none">
             <AnimatePresence mode="wait">
               <motion.span
                 key={current.id + '-badge'}
@@ -388,7 +290,7 @@ export function Hero({ onOrderClick }: HeroProps) {
           </div>
         </div>
 
-        {/* ── Headline + CTAs ── */}
+        {/* ── Headline + CTA ── */}
         <motion.div
           initial={{ opacity: 0, y: 28 }}
           animate={{ opacity: 1, y: 0 }}
@@ -422,17 +324,20 @@ export function Hero({ onOrderClick }: HeroProps) {
           </div>
         </motion.div>
 
-        {/* Dot indicators */}
+        {/* Slide indicators */}
         <div className="flex gap-2 mt-8 z-30">
           {HERO_PRODUCTS.map((_, i) => (
             <button
               key={i}
               onClick={() => setCurrentIndex(i)}
-              className="rounded-full transition-all duration-400 cursor-hover"
+              className="rounded-full transition-all duration-300 cursor-hover"
               style={{
                 width: i === currentIndex ? 26 : 7,
                 height: 7,
-                background: i === currentIndex ? 'hsl(345 75% 62%)' : 'hsl(44 30% 55% / 0.28)',
+                background:
+                  i === currentIndex
+                    ? 'hsl(345 75% 62%)'
+                    : 'hsl(44 30% 55% / 0.28)',
               }}
             />
           ))}
@@ -452,8 +357,16 @@ export function Hero({ onOrderClick }: HeroProps) {
               top: `${(i * 17 + 8) % 88}%`,
               background: 'hsl(345 75% 62% / 0.05)',
             }}
-            animate={{ y: [0, -(35 + i * 10), 0], x: [0, (i % 2 === 0 ? 1 : -1) * 18, 0] }}
-            transition={{ duration: 11 + i * 2, repeat: Infinity, ease: 'easeInOut', delay: i * 1.4 }}
+            animate={{
+              y: [0, -(35 + i * 10), 0],
+              x: [0, (i % 2 === 0 ? 1 : -1) * 18, 0],
+            }}
+            transition={{
+              duration: 11 + i * 2,
+              repeat: Infinity,
+              ease: 'easeInOut',
+              delay: i * 1.4,
+            }}
           />
         ))}
       </div>
