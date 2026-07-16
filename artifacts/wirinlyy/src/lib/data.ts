@@ -15,13 +15,13 @@ import orangeLemonImg   from '@/assets/drink-orange-lemon.png';
 import tiramisuDrinkImg from '@/assets/drink-tiramisu.png';
 
 export const products = [
-  { id: 'teddy-cake',              name: 'Teddy Cake',              price: 95000,  image: teddyCakeImg,             rating: 5.0, reviews: 128 },
-  { id: 'strawberry-cake',         name: 'Strawberry Cake',         price: 105000, image: strawberryCakeImg,        rating: 4.9, reviews: 94  },
-  { id: 'trifle',                  name: 'Trifle / Трайфл',         price: 100000, image: trifleImg,                rating: 4.8, reviews: 76  },
-  { id: 'mix-fruit-cake',          name: 'Mix Fruit Cake',          price: 105000, image: mixFruitCakeImg,          rating: 4.9, reviews: 111 },
-  { id: 'dovcha',                  name: 'Dovcha',                  price: 90000,  image: matildaXlImg,             rating: 4.7, reviews: 58  },
-  { id: 'chewy-cookie',            name: 'Chewy Cookie',            price: 55000,  image: chewyCookieImg,           rating: 5.0, reviews: 203 },
-  { id: 'strawberry-chewy-cookie', name: 'Strawberry Chewy Cookie', price: 55000,  image: strawberryChewyCookieImg, rating: 4.8, reviews: 167 },
+  { id: 'teddy-cake',              name: 'Teddy Cake',              price: 95000,  image: teddyCakeImg,             bgHover: 'hover:bg-[#4a2e21]' },
+  { id: 'strawberry-cake',         name: 'Strawberry Cake',         price: 105000, image: strawberryCakeImg,        bgHover: 'hover:bg-[#421d23]' },
+  { id: 'trifle',                  name: 'Trifle / Трайфл',         price: 100000, image: trifleImg,                bgHover: 'hover:bg-[#2e2621]' },
+  { id: 'mix-fruit-cake',          name: 'Mix Fruit Cake',          price: 105000, image: mixFruitCakeImg,          bgHover: 'hover:bg-[#3f2a1d]' },
+  { id: 'dovcha',                  name: 'Dovcha',                  price: 90000,  image: matildaXlImg,             bgHover: 'hover:bg-[#3d1818]' },
+  { id: 'chewy-cookie',            name: 'Chewy Cookie',            price: 55000,  image: chewyCookieImg,           bgHover: 'hover:bg-[#422e1c]' },
+  { id: 'strawberry-chewy-cookie', name: 'Strawberry Chewy Cookie', price: 55000,  image: strawberryChewyCookieImg, bgHover: 'hover:bg-[#421d23]' },
 ];
 
 export const drinks = [
