@@ -260,8 +260,8 @@ export function Hero({ onOrderClick }: HeroProps) {
                 transition={{ duration: 1.0, ease: [0.16, 1, 0.3, 1] }}
                 className="object-contain"
                 style={{
-                  height: '63%',
-                  maxHeight: 350,
+                  height: '82%',
+                  maxHeight: 480,
                   filter: 'drop-shadow(0 28px 55px rgba(0,0,0,0.72))',
                 }}
               />
