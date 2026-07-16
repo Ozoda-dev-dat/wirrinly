@@ -38,7 +38,7 @@ export function Navbar({ onOrderClick }: NavbarProps) {
         animate={{ y: 0 }}
         transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
         className={`fixed top-0 left-0 right-0 z-50 px-5 md:px-12 py-3.5 md:py-4 flex items-center justify-between transition-colors duration-500 ${
-          scrolled || menuOpen ? 'bg-background/95 backdrop-blur-lg border-b border-border/40' : 'bg-transparent'
+          scrolled || menuOpen ? 'bg-background/95 backdrop-blur-lg border-b border-border/60' : 'bg-transparent'
         }`}
       >
         {/* Logo */}
@@ -68,7 +68,7 @@ export function Navbar({ onOrderClick }: NavbarProps) {
           {/* Language switcher */}
           <div
             className="flex items-center rounded-full p-1"
-            style={{ background: 'hsl(17 46% 16%)' }}
+            style={{ background: 'hsl(340 40% 89%)' }}
           >
             {(['uz', 'ru'] as const).map((l) => (
               <button
@@ -76,7 +76,7 @@ export function Navbar({ onOrderClick }: NavbarProps) {
                 onClick={() => setLang(l)}
                 className="relative px-2.5 md:px-3 py-1 text-xs font-bold uppercase rounded-full transition-colors cursor-hover"
                 style={{
-                  color: lang === l ? '#fff' : 'hsl(44 30% 55%)',
+                  color: lang === l ? '#fff' : 'hsl(340 20% 40%)',
                   background: lang === l ? 'hsl(345 75% 62%)' : 'transparent',
                   transition: 'background 0.2s, color 0.2s',
                   minWidth: 36,
@@ -103,7 +103,7 @@ export function Navbar({ onOrderClick }: NavbarProps) {
           <button
             onClick={() => setMenuOpen((o) => !o)}
             className="md:hidden flex flex-col items-center justify-center w-10 h-10 gap-[6px] rounded-xl cursor-hover"
-            style={{ background: 'hsl(17 46% 16%)' }}
+            style={{ background: 'hsl(340 40% 89%)' }}
             aria-label="Menu"
           >
             <motion.span
@@ -134,7 +134,7 @@ export function Navbar({ onOrderClick }: NavbarProps) {
             exit={{ opacity: 0, y: -20 }}
             transition={{ duration: 0.3, ease: [0.16, 1, 0.3, 1] }}
             className="fixed inset-0 z-40 flex flex-col pt-24 pb-10 px-8 md:hidden"
-            style={{ background: 'hsl(17 46% 8% / 0.97)', backdropFilter: 'blur(20px)' }}
+            style={{ background: 'hsl(340 80% 97% / 0.97)', backdropFilter: 'blur(20px)' }}
           >
             {/* Nav links */}
             <div className="flex flex-col gap-1 flex-1">

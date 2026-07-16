@@ -113,11 +113,11 @@ export function Products() {
   const y = useTransform(scrollYProgress, [0, 1], [120, -120]);
 
   return (
-    <section id="products" ref={containerRef} className="relative py-32 md:py-48 overflow-hidden" style={{ background: 'hsl(17 46% 8%)' }}>
+    <section id="products" ref={containerRef} className="relative py-32 md:py-48 overflow-hidden" style={{ background: 'hsl(340 75% 96%)' }}>
 
       {/* Scrolling background text */}
       <motion.div
-        style={{ y, color: 'hsl(17 40% 14%)', lineHeight: 1 }}
+        style={{ y, color: 'hsl(340 40% 90%)', lineHeight: 1 }}
         className="absolute top-0 left-[-10%] w-[120%] text-[18vw] font-serif font-black whitespace-nowrap pointer-events-none select-none uppercase"
         aria-hidden
       >

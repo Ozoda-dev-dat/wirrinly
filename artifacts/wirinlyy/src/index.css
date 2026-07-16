@@ -41,70 +41,38 @@
 }
 
 :root {
-  /* Dark Chocolate + Rose Theme */
-  --background: 17 46% 10%;
-  --foreground: 44 60% 90%;
-  
-  --card: 17 46% 12%;
-  --card-foreground: 44 60% 90%;
-  --card-border: 17 46% 20%;
-  
-  --popover: 17 46% 10%;
-  --popover-foreground: 44 60% 90%;
-  --popover-border: 17 46% 20%;
-  
-  --primary: 345 75% 62%;
+  /* Light Pink Theme */
+  --background: 340 80% 97%;
+  --foreground: 340 30% 18%;
+
+  --card: 340 70% 95%;
+  --card-foreground: 340 30% 18%;
+  --card-border: 340 30% 83%;
+
+  --popover: 340 80% 97%;
+  --popover-foreground: 340 30% 18%;
+  --popover-border: 340 30% 83%;
+
+  --primary: 340 75% 58%;
   --primary-foreground: 0 0% 100%;
-  
-  --secondary: 17 46% 15%;
-  --secondary-foreground: 44 60% 90%;
-  
-  --muted: 17 46% 15%;
-  --muted-foreground: 44 30% 65%;
-  
-  --accent: 345 50% 20%;
-  --accent-foreground: 345 75% 80%;
-  
+
+  --secondary: 340 50% 91%;
+  --secondary-foreground: 340 30% 25%;
+
+  --muted: 340 40% 92%;
+  --muted-foreground: 340 20% 48%;
+
+  --accent: 340 60% 87%;
+  --accent-foreground: 340 40% 30%;
+
   --destructive: 0 84% 60%;
   --destructive-foreground: 0 0% 100%;
-  
-  --border: 17 40% 22%;
-  --input: 17 40% 22%;
-  --ring: 345 75% 62%;
-  
-  --radius: 0.5rem;
-}
 
-.dark {
-  --background: 17 46% 8%; 
-  --foreground: 44 60% 90%;
-  
-  --card: 17 46% 10%;
-  --card-foreground: 44 60% 90%;
-  --card-border: 17 46% 18%;
-  
-  --popover: 17 46% 8%;
-  --popover-foreground: 44 60% 90%;
-  --popover-border: 17 46% 18%;
-  
-  --primary: 44 60% 90%;
-  --primary-foreground: 17 46% 10%;
-  
-  --secondary: 17 46% 15%;
-  --secondary-foreground: 44 60% 90%;
-  
-  --muted: 17 46% 15%;
-  --muted-foreground: 44 30% 70%;
-  
-  --accent: 17 46% 18%;
-  --accent-foreground: 44 60% 90%;
-  
-  --destructive: 0 62.8% 30.6%;
-  --destructive-foreground: 44 60% 90%;
-  
-  --border: 17 46% 18%;
-  --input: 17 46% 18%;
-  --ring: 44 60% 90%;
+  --border: 340 30% 83%;
+  --input: 340 30% 83%;
+  --ring: 340 75% 58%;
+
+  --radius: 0.5rem;
 }
 
 @layer base {

@@ -86,7 +86,7 @@ export function OrderModal({ onClose, defaultProduct }: OrderModalProps) {
         exit={{ y: 80, opacity: 0, scale: 0.96 }}
         transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
         className="relative z-10 w-full md:max-w-lg rounded-t-3xl md:rounded-3xl overflow-hidden"
-        style={{ background: 'hsl(17 46% 11%)', border: '1px solid hsl(17 40% 22%)' }}
+        style={{ background: 'hsl(340 80% 97%)', border: '1px solid hsl(340 30% 83%)' }}
       >
         {/* Rose top accent */}
         <div className="h-1 w-full" style={{ background: 'linear-gradient(to right, hsl(345 75% 55%), hsl(345 75% 72%))' }} />
@@ -127,7 +127,7 @@ export function OrderModal({ onClose, defaultProduct }: OrderModalProps) {
                 <button
                   onClick={onClose}
                   className="w-9 h-9 rounded-full flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors cursor-hover"
-                  style={{ background: 'hsl(17 46% 16%)' }}
+                  style={{ background: 'hsl(340 50% 91%)' }}
                 >
                   <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.5">
                     <line x1="18" y1="6" x2="6" y2="18" />
@@ -147,10 +147,10 @@ export function OrderModal({ onClose, defaultProduct }: OrderModalProps) {
                     placeholder={t.namePlaceholder}
                     className="w-full px-4 py-3 rounded-xl text-foreground placeholder:text-muted-foreground/50 outline-none focus:ring-2 transition-all text-sm"
                     style={{
-                      background: 'hsl(17 46% 16%)',
-                      border: '1px solid hsl(17 40% 26%)',
+                      background: 'hsl(340 50% 91%)',
+                      border: '1px solid hsl(340 25% 77%)',
                       // @ts-ignore
-                      '--tw-ring-color': 'hsl(345 75% 62% / 0.5)',
+                      '--tw-ring-color': 'hsl(340 75% 58% / 0.5)',
                     }}
                   />
                 </div>
@@ -166,8 +166,8 @@ export function OrderModal({ onClose, defaultProduct }: OrderModalProps) {
                     placeholder={t.phonePlaceholder}
                     className="w-full px-4 py-3 rounded-xl text-foreground placeholder:text-muted-foreground/50 outline-none focus:ring-2 transition-all text-sm"
                     style={{
-                      background: 'hsl(17 46% 16%)',
-                      border: '1px solid hsl(17 40% 26%)',
+                      background: 'hsl(340 50% 91%)',
+                      border: '1px solid hsl(340 25% 77%)',
                     }}
                   />
                 </div>
@@ -180,12 +180,12 @@ export function OrderModal({ onClose, defaultProduct }: OrderModalProps) {
                     onChange={(e) => setSelectedProduct(e.target.value)}
                     className="w-full px-4 py-3 rounded-xl text-foreground outline-none focus:ring-2 transition-all text-sm appearance-none cursor-pointer"
                     style={{
-                      background: 'hsl(17 46% 16%)',
-                      border: '1px solid hsl(17 40% 26%)',
+                      background: 'hsl(340 50% 91%)',
+                      border: '1px solid hsl(340 25% 77%)',
                     }}
                   >
                     {products.map((p) => (
-                      <option key={p.id} value={p.id} style={{ background: 'hsl(17 46% 11%)' }}>
+                      <option key={p.id} value={p.id} style={{ background: 'hsl(340 70% 95%)' }}>
                         {p.name} — {p.price.toLocaleString()} UZS
                       </option>
                     ))}
@@ -200,7 +200,7 @@ export function OrderModal({ onClose, defaultProduct }: OrderModalProps) {
                       type="button"
                       onClick={() => setQty(Math.max(1, qty - 1))}
                       className="w-10 h-10 rounded-full flex items-center justify-center text-foreground hover:text-primary transition-colors cursor-hover text-xl font-bold"
-                      style={{ background: 'hsl(17 46% 16%)', border: '1px solid hsl(17 40% 26%)' }}
+                      style={{ background: 'hsl(340 50% 91%)', border: '1px solid hsl(340 25% 77%)' }}
                     >
                       −
                     </button>
@@ -209,7 +209,7 @@ export function OrderModal({ onClose, defaultProduct }: OrderModalProps) {
                       type="button"
                       onClick={() => setQty(qty + 1)}
                       className="w-10 h-10 rounded-full flex items-center justify-center text-foreground hover:text-primary transition-colors cursor-hover text-xl font-bold"
-                      style={{ background: 'hsl(17 46% 16%)', border: '1px solid hsl(17 40% 26%)' }}
+                      style={{ background: 'hsl(340 50% 91%)', border: '1px solid hsl(340 25% 77%)' }}
                     >
                       +
                     </button>
@@ -232,8 +232,8 @@ export function OrderModal({ onClose, defaultProduct }: OrderModalProps) {
                     rows={2}
                     className="w-full px-4 py-3 rounded-xl text-foreground placeholder:text-muted-foreground/50 outline-none focus:ring-2 transition-all text-sm resize-none"
                     style={{
-                      background: 'hsl(17 46% 16%)',
-                      border: '1px solid hsl(17 40% 26%)',
+                      background: 'hsl(340 50% 91%)',
+                      border: '1px solid hsl(340 25% 77%)',
                     }}
                   />
                 </div>

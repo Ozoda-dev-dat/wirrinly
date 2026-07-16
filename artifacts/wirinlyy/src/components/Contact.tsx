@@ -11,7 +11,7 @@ export function Contact({ onOrderClick }: ContactProps) {
   const t = translations[lang].contact;
 
   return (
-    <footer id="contact" className="relative pt-32 pb-12 overflow-hidden" style={{ background: 'hsl(17 46% 9%)', borderTop: '1px solid hsl(17 40% 18%)' }}>
+    <footer id="contact" className="relative pt-32 pb-12 overflow-hidden" style={{ background: 'hsl(340 60% 94%)', borderTop: '1px solid hsl(340 35% 86%)' }}>
 
       {/* Rose glow top */}
       <div
@@ -106,7 +106,7 @@ export function Contact({ onOrderClick }: ContactProps) {
         </div>
 
         {/* Info row */}
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 pt-12 text-center md:text-left" style={{ borderTop: '1px solid hsl(17 40% 18%)' }}>
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-10 pt-12 text-center md:text-left" style={{ borderTop: '1px solid hsl(340 35% 86%)' }}>
           <div>
             <h4 className="text-xs font-bold tracking-widest uppercase text-muted-foreground mb-3">
               {lang === 'uz' ? 'Aloqa' : 'Контакт'}

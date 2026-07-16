@@ -300,7 +300,7 @@ export function Hero({ onOrderClick }: HeroProps) {
           <div className="absolute inset-0 flex items-center justify-center select-none z-50 pointer-events-none mix-blend-overlay opacity-50">
             <h1
               className="text-[13vw] md:text-[152px] font-serif font-black leading-none tracking-tighter"
-              style={{ color: 'hsl(17 46% 8% / 0.5)' }}
+              style={{ color: 'hsl(340 30% 18% / 0.25)' }}
             >
               wirinlyy
             </h1>
