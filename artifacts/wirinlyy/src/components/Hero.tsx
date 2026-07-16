@@ -4,9 +4,9 @@ import { useAppStore } from '@/store/useAppStore';
 import { translations } from '@/lib/translations';
 
 // Product images
-import mixFruitImg    from '@assets/image_1784181113262.png';
-import teddyCakeImg   from '@assets/image_1784181137829.png';
-import strawberryCakeImg from '@assets/image_1784181073927.png';
+import mixFruitImg    from '@assets/Без_названия__5_-removebg-preview_1784184619780.png';
+import teddyCakeImg   from '@assets/Без_названия__6_-removebg-preview_1784184619778.png';
+import strawberryCakeImg from '@assets/Без_названия__3_-removebg-preview_1784184619781.png';
 
 // Fruit / ingredient photos — transparent background
 import kiwiImg       from '@/assets/fruits/kiwi.png';
@@ -289,19 +289,41 @@ export function Hero({ onOrderClick }: HeroProps) {
             </h1>
           </div>
 
-          {/* Product name */}
-          <div className="absolute bottom-1 right-2 md:right-0 z-[60] pointer-events-none">
+          {/* Product name — prominent animated title */}
+          <div className="absolute bottom-0 left-0 right-0 z-[60] pointer-events-none flex flex-col items-center gap-1">
             <AnimatePresence mode="wait">
-              <motion.span
-                key={scene.id + '-badge'}
-                initial={{ opacity: 0, x: 16 }}
-                animate={{ opacity: 1, x: 0 }}
-                exit={{ opacity: 0, x: -16 }}
-                transition={{ duration: 0.45 }}
-                className="text-[10px] md:text-xs font-bold tracking-[0.28em] uppercase text-muted-foreground"
+              <motion.div
+                key={scene.id + '-name'}
+                initial={{ opacity: 0, y: 18, filter: 'blur(6px)' }}
+                animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
+                exit={{ opacity: 0, y: -14, filter: 'blur(6px)' }}
+                transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
+                className="flex flex-col items-center gap-[3px]"
               >
-                {scene.name}
-              </motion.span>
+                {/* decorative line */}
+                <motion.div
+                  initial={{ scaleX: 0 }}
+                  animate={{ scaleX: 1 }}
+                  exit={{ scaleX: 0 }}
+                  transition={{ duration: 0.4, delay: 0.2 }}
+                  className="h-px w-12 rounded-full"
+                  style={{ background: 'hsl(345 75% 62% / 0.6)' }}
+                />
+                <span
+                  className="text-sm md:text-lg font-serif font-bold tracking-[0.18em] uppercase"
+                  style={{ color: 'hsl(345 75% 80%)' }}
+                >
+                  {scene.name}
+                </span>
+                <motion.div
+                  initial={{ scaleX: 0 }}
+                  animate={{ scaleX: 1 }}
+                  exit={{ scaleX: 0 }}
+                  transition={{ duration: 0.4, delay: 0.2 }}
+                  className="h-px w-12 rounded-full"
+                  style={{ background: 'hsl(345 75% 62% / 0.6)' }}
+                />
+              </motion.div>
             </AnimatePresence>
           </div>
         </div>

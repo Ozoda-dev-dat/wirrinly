@@ -1,11 +1,11 @@
-import chewyCookieImg from '@assets/image_1784180972868.png';
-import strawberryChewyCookieImg from '@assets/image_1784180989713.png';
-import matildaXlImg from '@assets/image_1784181039553.png';
-import trifleImg from '@assets/image_1784181061892.png';
-import strawberryCakeImg from '@assets/image_1784181073927.png';
+import chewyCookieImg from '@assets/Без_названия-removebg-preview_1784184619783.png';
+import strawberryChewyCookieImg from '@assets/Без_названия__1_-removebg-preview_1784184619783.png';
+import matildaXlImg from '@assets/Без_названия__4_-removebg-preview_1784184619781.png';
+import trifleImg from '@assets/Без_названия__2_-removebg-preview_1784184619782.png';
+import strawberryCakeImg from '@assets/Без_названия__3_-removebg-preview_1784184619781.png';
 import dovchaImg from '@assets/image_1784181088416.png';
-import mixFruitCakeImg from '@assets/image_1784181113262.png';
-import teddyCakeImg from '@assets/image_1784181137829.png';
+import mixFruitCakeImg from '@assets/Без_названия__5_-removebg-preview_1784184619780.png';
+import teddyCakeImg from '@assets/Без_названия__6_-removebg-preview_1784184619778.png';
 import coloredCollectionImg from '@assets/image_1784181019893.png';
 
 export const products = [
