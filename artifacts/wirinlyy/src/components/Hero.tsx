@@ -42,6 +42,10 @@ const SCENES: {
   id: string;
   img: string;
   name: string;
+  price: number;
+  rating: number;
+  reviews: number;
+  badge?: string;
   items: Ing[];
 }[] = [
   /* ── Mix Fruit Cake ── */
@@ -49,6 +53,10 @@ const SCENES: {
     id: 'mix',
     img: mixFruitImg,
     name: 'Mix Fruit Cake',
+    price: 105000,
+    rating: 4.9,
+    reviews: 111,
+    badge: 'Bestseller',
     items: [
       { src: bananaImg,  x:  -320, y:  130, size: 170, delay: 0,    rot: -55,  dof: 2.5, front: false },
       { src: bananaImg,  x:   260, y:  145, size: 140, delay: 0.12, rot:  60,  dof: 1.5, front: true  },
@@ -69,6 +77,10 @@ const SCENES: {
     id: 'teddy',
     img: teddyCakeImg,
     name: 'Teddy Cake',
+    price: 95000,
+    rating: 5.0,
+    reviews: 128,
+    badge: "Eng ko'p sotilgan",
     items: [
       { src: chocChunkImg, x:  -300, y:   90, size: 145, delay: 0,    rot: -22, dof: 3,  front: false },
       { src: chocChunkImg, x:   270, y:  120, size: 120, delay: 0.08, rot:  30, dof: 2,  front: true  },
@@ -89,6 +101,10 @@ const SCENES: {
     id: 'strawberry',
     img: strawberryCakeImg,
     name: 'Strawberry Cake',
+    price: 105000,
+    rating: 4.9,
+    reviews: 94,
+    badge: 'Maxsus',
     items: [
       { src: raspberryImg, x:  -60,  y: -160, size: 160, delay: 0,    rot:  -5, dof: 3,  front: false },
       { src: raspberryImg, x:  170,  y:  -80, size: 135, delay: 0.07, rot:  12, dof: 2,  front: true  },
@@ -306,39 +322,84 @@ export function Hero({ onOrderClick }: HeroProps) {
             </h1>
           </div>
 
-          {/* Product name */}
-          <div className="absolute bottom-0 left-0 right-0 z-[60] pointer-events-none flex flex-col items-center gap-1">
+          {/* Product info card */}
+          <div className="absolute bottom-0 left-0 right-0 z-[60] pointer-events-none flex flex-col items-center">
             <AnimatePresence mode="wait">
               <motion.div
-                key={scene.id + '-name'}
-                initial={{ opacity: 0, y: 18, filter: 'blur(6px)' }}
+                key={scene.id + '-info'}
+                initial={{ opacity: 0, y: 20, filter: 'blur(8px)' }}
                 animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                exit={{ opacity: 0, y: -14, filter: 'blur(6px)' }}
+                exit={{ opacity: 0, y: -12, filter: 'blur(6px)' }}
                 transition={{ duration: 0.55, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
-                className="flex flex-col items-center gap-[3px]"
+                className="flex flex-col items-center gap-2"
               >
-                <motion.div
-                  initial={{ scaleX: 0 }}
-                  animate={{ scaleX: 1 }}
-                  exit={{ scaleX: 0 }}
-                  transition={{ duration: 0.4, delay: 0.2 }}
-                  className="h-px w-12 rounded-full"
-                  style={{ background: 'hsl(345 75% 62% / 0.6)' }}
-                />
-                <span
-                  className="text-xs sm:text-sm md:text-lg font-serif font-bold tracking-[0.18em] uppercase"
-                  style={{ color: 'hsl(345 75% 80%)' }}
-                >
-                  {scene.name}
-                </span>
-                <motion.div
-                  initial={{ scaleX: 0 }}
-                  animate={{ scaleX: 1 }}
-                  exit={{ scaleX: 0 }}
-                  transition={{ duration: 0.4, delay: 0.2 }}
-                  className="h-px w-12 rounded-full"
-                  style={{ background: 'hsl(345 75% 62% / 0.6)' }}
-                />
+                {/* Badge */}
+                {scene.badge && (
+                  <motion.span
+                    initial={{ opacity: 0, scale: 0.8 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0, scale: 0.8 }}
+                    transition={{ duration: 0.35, delay: 0.25 }}
+                    className="px-3 py-0.5 rounded-full text-[10px] sm:text-xs font-bold uppercase tracking-widest"
+                    style={{
+                      background: 'hsl(345 75% 62% / 0.15)',
+                      border: '1px solid hsl(345 75% 62% / 0.35)',
+                      color: 'hsl(345 75% 62%)',
+                      backdropFilter: 'blur(8px)',
+                    }}
+                  >
+                    ✦ {scene.badge}
+                  </motion.span>
+                )}
+
+                {/* Divider line + name */}
+                <div className="flex flex-col items-center gap-1">
+                  <motion.div
+                    initial={{ scaleX: 0 }}
+                    animate={{ scaleX: 1 }}
+                    exit={{ scaleX: 0 }}
+                    transition={{ duration: 0.4, delay: 0.2 }}
+                    className="h-px w-10 rounded-full"
+                    style={{ background: 'hsl(345 75% 62% / 0.5)' }}
+                  />
+                  <span
+                    className="text-xs sm:text-sm md:text-base font-serif font-bold tracking-[0.18em] uppercase"
+                    style={{ color: 'hsl(345 75% 78%)' }}
+                  >
+                    {scene.name}
+                  </span>
+                  <motion.div
+                    initial={{ scaleX: 0 }}
+                    animate={{ scaleX: 1 }}
+                    exit={{ scaleX: 0 }}
+                    transition={{ duration: 0.4, delay: 0.2 }}
+                    className="h-px w-10 rounded-full"
+                    style={{ background: 'hsl(345 75% 62% / 0.5)' }}
+                  />
+                </div>
+
+                {/* Stars + price row */}
+                <div className="flex items-center gap-3">
+                  {/* Stars */}
+                  <div className="flex items-center gap-0.5">
+                    {[1,2,3,4,5].map(s => (
+                      <span key={s} style={{ color: 'hsl(345 75% 62%)', fontSize: 11 }}>
+                        {scene.rating >= s ? '★' : scene.rating >= s - 0.5 ? '⯨' : '☆'}
+                      </span>
+                    ))}
+                    <span className="ml-1 text-[10px] sm:text-xs" style={{ color: 'hsl(345 75% 75%)' }}>
+                      {scene.rating.toFixed(1)}
+                    </span>
+                  </div>
+
+                  {/* Dot separator */}
+                  <span style={{ color: 'hsl(345 75% 62% / 0.4)', fontSize: 10 }}>●</span>
+
+                  {/* Price */}
+                  <span className="text-sm sm:text-base font-bold" style={{ color: 'hsl(345 75% 62%)' }}>
+                    {scene.price.toLocaleString()} <span className="text-[10px] font-medium" style={{ color: 'hsl(345 75% 75%)' }}>UZS</span>
+                  </span>
+                </div>
               </motion.div>
             </AnimatePresence>
           </div>
