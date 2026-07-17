@@ -20,10 +20,11 @@ interface Garnish {
   dof?: number; front?: boolean;
 }
 
-const SCENES: { id: string; garnishes: Garnish[] }[] = [
+const SCENES: { id: string; garnishes: Garnish[], bgTint: string }[] = [
   /* Peach Ice Tea */
   {
     id: 'peach-ice-tea',
+    bgTint: 'hsl(30 60% 97%)', // Warm orange tint
     garnishes: [
       { src: orangeImg,    x: -280, y:  80,  size: 110, delay: 0,    rot: -15, front: false },
       { src: orangeImg,    x:  260, y:  100, size: 90,  delay: 0.12, rot:  20, dof: 1.5, front: true },
@@ -36,6 +37,7 @@ const SCENES: { id: string; garnishes: Garnish[] }[] = [
   /* Puffy Special */
   {
     id: 'puffy-special',
+    bgTint: 'hsl(340 60% 97%)', // Pink tint
     garnishes: [
       { src: raspberryImg, x: -260, y:  90,  size: 120, delay: 0,    rot: -20, front: false },
       { src: raspberryImg, x:  240, y:  120, size: 100, delay: 0.1,  rot:  18, dof: 1.5, front: true },
@@ -48,6 +50,7 @@ const SCENES: { id: string; garnishes: Garnish[] }[] = [
   /* Pink Panda */
   {
     id: 'pink-panda',
+    bgTint: 'hsl(340 70% 96%)', // Pink tint
     garnishes: [
       { src: raspberryImg, x: -240, y:  60,  size: 130, delay: 0,    rot:  -5, front: false },
       { src: raspberryImg, x:  230, y:  110, size: 110, delay: 0.08, rot:  14, dof: 2, front: true },
@@ -60,6 +63,7 @@ const SCENES: { id: string; garnishes: Garnish[] }[] = [
   /* Matcha Can */
   {
     id: 'green-can',
+    bgTint: 'hsl(110 40% 97%)', // Green tint
     garnishes: [
       { src: kiwiImg,   x: -260, y:  100, size: 120, delay: 0,    rot: -30, front: false },
       { src: kiwiImg,   x:  250, y:   90, size: 100, delay: 0.1,  rot:  22, dof: 1.5, front: true },
@@ -72,6 +76,7 @@ const SCENES: { id: string; garnishes: Garnish[] }[] = [
   /* Orange Lemonade */
   {
     id: 'orange-lemon',
+    bgTint: 'hsl(40 60% 96%)', // Orange/Yellow tint
     garnishes: [
       { src: orangeImg,    x: -270, y:   70, size: 115, delay: 0,    rot:   0, front: false },
       { src: orangeImg,    x:  260, y:  100, size: 95,  delay: 0.09, rot:   0, dof: 1.5, front: true },
@@ -84,6 +89,7 @@ const SCENES: { id: string; garnishes: Garnish[] }[] = [
   /* Tiramisu Drink */
   {
     id: 'tiramisu-drink',
+    bgTint: 'hsl(20 40% 96%)', // Brown/Warm tint
     garnishes: [
       { src: chocChunkImg, x: -260, y:   80, size: 120, delay: 0,    rot: -20, front: false },
       { src: chocChunkImg, x:  250, y:  110, size: 100, delay: 0.09, rot:  28, dof: 2, front: true },
@@ -170,29 +176,26 @@ export function Drinks() {
   const orderCta = lang === 'uz' ? 'Buyurtma berish' : 'Заказать';
 
   return (
-    <section id="drinks" className="relative min-h-[90dvh] w-full flex flex-col items-center justify-center overflow-hidden py-24 md:py-32"
-      style={{ background: 'hsl(340 60% 98%)' }}>
-
-      {/* Section label */}
-      <motion.p
-        initial={{ opacity: 0, y: -16 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.7 }}
-        className="text-sm font-bold tracking-[0.3em] uppercase mb-2 z-10"
-        style={{ color: 'hsl(345 75% 62%)' }}
+    <motion.section 
+      id="drinks" 
+      className="relative min-h-[90dvh] w-full flex flex-col items-center justify-center overflow-hidden py-24 md:py-32 transition-colors duration-1000 ease-in-out"
+      style={{ background: scene.bgTint }}
+    >
+      {/* Section reveal clip-path */}
+      <motion.div
+        initial={{ clipPath: "inset(0 100% 0 0)" }}
+        whileInView={{ clipPath: "inset(0 0% 0 0)" }}
+        viewport={{ once: true, margin: "-100px" }}
+        transition={{ duration: 1, ease: [0.76, 0, 0.24, 1] }}
+        className="flex flex-col items-center z-10"
       >
-        ✦ {title}
-      </motion.p>
-      <motion.p
-        initial={{ opacity: 0 }}
-        whileInView={{ opacity: 1 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.7, delay: 0.1 }}
-        className="text-sm text-muted-foreground mb-8 z-10"
-      >
-        {subtitle}
-      </motion.p>
+        <p className="text-sm font-bold tracking-[0.3em] uppercase mb-2" style={{ color: 'hsl(345 75% 62%)' }}>
+          ✦ {title}
+        </p>
+        <p className="text-sm text-muted-foreground mb-8">
+          {subtitle}
+        </p>
+      </motion.div>
 
       {/* Ambient glow */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
@@ -269,16 +272,17 @@ export function Drinks() {
             </AnimatePresence>
           </div>
 
-          {/* Drink name label */}
-          <div className="absolute bottom-0 left-0 right-0 z-[60] pointer-events-none flex flex-col items-center gap-1">
+          {/* Drink name label with Flip animation */}
+          <div className="absolute bottom-0 left-0 right-0 z-[60] pointer-events-none flex flex-col items-center gap-1" style={{ perspective: 1000 }}>
             <AnimatePresence mode="wait">
               <motion.div
                 key={drink.id + '-label'}
-                initial={{ opacity: 0, y: 16, filter: 'blur(6px)' }}
-                animate={{ opacity: 1, y: 0, filter: 'blur(0px)' }}
-                exit={{ opacity: 0, y: -12, filter: 'blur(6px)' }}
+                initial={{ opacity: 0, rotateX: -90, filter: 'blur(6px)' }}
+                animate={{ opacity: 1, rotateX: 0, filter: 'blur(0px)' }}
+                exit={{ opacity: 0, rotateX: 90, filter: 'blur(6px)' }}
                 transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1], delay: 0.1 }}
                 className="flex flex-col items-center gap-[3px]"
+                style={{ transformOrigin: 'bottom' }}
               >
                 <motion.div initial={{ scaleX: 0 }} animate={{ scaleX: 1 }} exit={{ scaleX: 0 }}
                   transition={{ duration: 0.4, delay: 0.2 }}
@@ -316,7 +320,7 @@ export function Drinks() {
               onClick={() => setShowModal(true)}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.96 }}
-              className="px-8 py-3 text-sm font-bold uppercase tracking-widest text-white rounded-full cursor-hover"
+              className="px-8 py-3 text-sm font-bold uppercase tracking-widest text-white rounded-full cursor-hover cursor-magnetic"
               style={{ background: 'hsl(345 75% 62%)' }}
             >
               {orderCta}
@@ -354,6 +358,6 @@ export function Drinks() {
       <AnimatePresence>
         {showModal && <OrderModal onClose={() => setShowModal(false)} defaultProduct={drink.id} />}
       </AnimatePresence>
-    </section>
+    </motion.section>
   );
 }

@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from 'react';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useMotionValue, useSpring, useTransform, useScroll } from 'framer-motion';
 import { useAppStore } from '@/store/useAppStore';
 import { translations } from '@/lib/translations';
 
@@ -22,18 +22,12 @@ interface HeroProps { onOrderClick: () => void }
 // ─── Ingredient definition ────────────────────────────────────────────────────
 interface Ing {
   src: string;
-  /** Final position relative to scene center (px) — at reference scale 1.0 */
   x: number;
   y: number;
-  /** px — larger = closer to camera — at reference scale 1.0 */
   size: number;
-  /** seconds */
   delay: number;
-  /** final rotation degrees */
   rot: number;
-  /** blur px to leave on this item (depth-of-field simulation) */
   dof?: number;
-  /** render in front of the product photo */
   front?: boolean;
 }
 
@@ -180,6 +174,7 @@ export function Hero({ onOrderClick }: HeroProps) {
   const { lang } = useAppStore();
   const t = translations[lang].hero;
   const [idx, setIdx] = useState(0);
+  const sectionRef = useRef<HTMLElement>(null);
   const containerRef = useRef<HTMLDivElement>(null);
   const [factor, setFactor] = useState(1);
 
@@ -211,8 +206,64 @@ export function Hero({ onOrderClick }: HeroProps) {
   // Composition height scales with factor
   const compHeight = Math.max(260, Math.min(520, 480 * factor + 60));
 
+  // --- Mouse Parallax ---
+  const mouseX = useMotionValue(0);
+  const mouseY = useMotionValue(0);
+
+  const springX = useSpring(mouseX, { stiffness: 60, damping: 25 });
+  const springY = useSpring(mouseY, { stiffness: 60, damping: 25 });
+
+  const handleMouseMove = (e: React.MouseEvent) => {
+    if (!sectionRef.current) return;
+    const rect = sectionRef.current.getBoundingClientRect();
+    const x = (e.clientX - rect.left) / rect.width - 0.5;
+    const y = (e.clientY - rect.top) / rect.height - 0.5;
+    mouseX.set(x);
+    mouseY.set(y);
+  };
+
+  const handleMouseLeave = () => {
+    mouseX.set(0);
+    mouseY.set(0);
+  };
+
+  const backX = useTransform(springX, [-0.5, 0.5], [18, -18]);
+  const backY = useTransform(springY, [-0.5, 0.5], [18, -18]);
+
+  const productX = useTransform(springX, [-0.5, 0.5], [-10, 10]);
+  const productY = useTransform(springY, [-0.5, 0.5], [-10, 10]);
+
+  const frontX = useTransform(springX, [-0.5, 0.5], [-26, 26]);
+  const frontY = useTransform(springY, [-0.5, 0.5], [-26, 26]);
+
+  const textX = useTransform(springX, [-0.5, 0.5], [8, -8]);
+  const textY = useTransform(springY, [-0.5, 0.5], [8, -8]);
+
+  // --- Scroll Exit ---
+  const { scrollYProgress } = useScroll({
+    target: sectionRef,
+    offset: ['start start', 'end start'],
+  });
+  
+  const scrollY = useTransform(scrollYProgress, [0, 1], [0, -150]);
+  const scrollScale = useTransform(scrollYProgress, [0, 1], [1, 0.92]);
+
   return (
-    <section className="relative min-h-[100dvh] w-full flex items-center justify-center overflow-hidden bg-background pt-16 md:pt-20">
+    <section 
+      ref={sectionRef}
+      onMouseMove={handleMouseMove}
+      onMouseLeave={handleMouseLeave}
+      className="relative min-h-[100dvh] w-full flex items-center justify-center overflow-hidden bg-background pt-16 md:pt-20"
+    >
+      {/* Grain overlay */}
+      <div className="absolute inset-0 z-[100] pointer-events-none opacity-[0.04] mix-blend-multiply">
+        <svg className="w-full h-full">
+          <filter id="noiseFilter">
+            <feTurbulence type="fractalNoise" baseFrequency="0.65" numOctaves="3" stitchTiles="stitch" />
+          </filter>
+          <rect width="100%" height="100%" filter="url(#noiseFilter)" />
+        </svg>
+      </div>
 
       {/* Ambient glow */}
       <div className="absolute inset-0 flex items-center justify-center pointer-events-none z-0">
@@ -232,8 +283,10 @@ export function Hero({ onOrderClick }: HeroProps) {
         </AnimatePresence>
       </div>
 
-      <div className="container relative z-10 flex flex-col items-center justify-center px-4 w-full">
-
+      <motion.div 
+        style={{ y: scrollY, scale: scrollScale }}
+        className="container relative z-10 flex flex-col items-center justify-center px-4 w-full"
+      >
         {/* ── Composition ── */}
         <div
           ref={containerRef}
@@ -241,7 +294,7 @@ export function Hero({ onOrderClick }: HeroProps) {
           style={{ height: compHeight }}
         >
           {/* Layer 1 — back ingredients */}
-          <div className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
+          <motion.div style={{ x: backX, y: backY }} className="absolute inset-0 flex items-center justify-center z-10 pointer-events-none">
             <AnimatePresence mode="wait">
               <div key={scene.id + '-back'} className="absolute inset-0 flex items-center justify-center">
                 {backItems.map((item, i) => (
@@ -249,10 +302,10 @@ export function Hero({ onOrderClick }: HeroProps) {
                 ))}
               </div>
             </AnimatePresence>
-          </div>
+          </motion.div>
 
           {/* Layer 2 — brand name outline */}
-          <div className="absolute inset-0 flex items-center justify-center select-none z-20 pointer-events-none">
+          <motion.div style={{ x: textX, y: textY }} className="absolute inset-0 flex items-center justify-center select-none z-20 pointer-events-none">
             <motion.h1
               initial={{ opacity: 0, y: 24 }}
               animate={{ opacity: 1, y: 0 }}
@@ -262,10 +315,10 @@ export function Hero({ onOrderClick }: HeroProps) {
             >
               wirinlyy
             </motion.h1>
-          </div>
+          </motion.div>
 
           {/* Layer 3 — product image */}
-          <div className="absolute inset-0 flex items-center justify-center z-30 pointer-events-none">
+          <motion.div style={{ x: productX, y: productY }} className="absolute inset-0 flex items-center justify-center z-30 pointer-events-none">
             <AnimatePresence mode="wait">
               <motion.img
                 key={scene.id + '-img'}
@@ -283,10 +336,10 @@ export function Hero({ onOrderClick }: HeroProps) {
                 }}
               />
             </AnimatePresence>
-          </div>
+          </motion.div>
 
           {/* Layer 4 — front ingredients (in front of product) */}
-          <div className="absolute inset-0 flex items-center justify-center z-40 pointer-events-none">
+          <motion.div style={{ x: frontX, y: frontY }} className="absolute inset-0 flex items-center justify-center z-40 pointer-events-none">
             <AnimatePresence mode="wait">
               <div key={scene.id + '-front'} className="absolute inset-0 flex items-center justify-center">
                 {frontItems.map((item, i) => (
@@ -294,17 +347,17 @@ export function Hero({ onOrderClick }: HeroProps) {
                 ))}
               </div>
             </AnimatePresence>
-          </div>
+          </motion.div>
 
           {/* Layer 5 — text depth blend */}
-          <div className="absolute inset-0 flex items-center justify-center select-none z-50 pointer-events-none mix-blend-overlay opacity-50">
+          <motion.div style={{ x: textX, y: textY }} className="absolute inset-0 flex items-center justify-center select-none z-50 pointer-events-none mix-blend-overlay opacity-50">
             <h1
               className="text-[13vw] md:text-[152px] font-serif font-black leading-none tracking-tighter"
               style={{ color: 'hsl(340 30% 18% / 0.25)' }}
             >
               wirinlyy
             </h1>
-          </div>
+          </motion.div>
 
           {/* Product name */}
           <div className="absolute bottom-0 left-0 right-0 z-[60] pointer-events-none flex flex-col items-center gap-1">
@@ -352,7 +405,17 @@ export function Hero({ onOrderClick }: HeroProps) {
           className="flex flex-col items-center text-center z-30 mt-4 md:mt-3 px-4 w-full"
         >
           <h2 className="text-lg sm:text-xl md:text-4xl font-serif font-bold text-foreground mb-2 md:mb-3 max-w-2xl leading-snug">
-            {t.headline}
+            {t.headline.split(' ').map((word, i) => (
+              <motion.span
+                key={i}
+                initial={{ y: 40, opacity: 0 }}
+                animate={{ y: 0, opacity: 1 }}
+                transition={{ delay: i * 0.06 + 0.45, duration: 0.6, ease: [0.16, 1, 0.3, 1] }}
+                className="inline-block mr-[0.25em]"
+              >
+                {word}
+              </motion.span>
+            ))}
           </h2>
           <p className="text-[10px] sm:text-[11px] md:text-sm text-muted-foreground uppercase tracking-[0.25em] md:tracking-[0.3em] mb-6 md:mb-8">
             {t.tagline}
@@ -363,14 +426,14 @@ export function Hero({ onOrderClick }: HeroProps) {
               onClick={onOrderClick}
               whileHover={{ scale: 1.05 }}
               whileTap={{ scale: 0.96 }}
-              className="px-6 sm:px-8 py-3 sm:py-4 text-xs sm:text-sm font-bold uppercase tracking-widest text-white rounded-full cursor-hover"
+              className="px-6 sm:px-8 py-3 sm:py-4 text-xs sm:text-sm font-bold uppercase tracking-widest text-white rounded-full cursor-hover cursor-magnetic"
               style={{ background: 'hsl(345 75% 62%)' }}
             >
               {t.cta}
             </motion.button>
             <a
               href="#products"
-              className="px-6 sm:px-8 py-3 sm:py-4 text-xs sm:text-sm font-bold uppercase tracking-widest rounded-full cursor-hover"
+              className="px-6 sm:px-8 py-3 sm:py-4 text-xs sm:text-sm font-bold uppercase tracking-widest rounded-full cursor-hover cursor-magnetic"
               style={{ border: '1px solid hsl(345 75% 62% / 0.4)', color: 'hsl(345 75% 72%)' }}
             >
               {lang === 'uz' ? "Ko'rish" : 'Смотреть'}
@@ -393,7 +456,7 @@ export function Hero({ onOrderClick }: HeroProps) {
             />
           ))}
         </div>
-      </div>
+      </motion.div>
 
       {/* Background ambient blobs */}
       <div className="absolute inset-0 overflow-hidden pointer-events-none z-0">
