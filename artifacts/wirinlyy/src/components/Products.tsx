@@ -91,17 +91,16 @@ function ProductCard({ product, index }: { product: any; index: number }) {
           transformStyle: 'preserve-3d',
         }}
       >
-        {/* Shimmer Border on Hover */}
-        {isHovered && (
-          <motion.div 
-            className="absolute inset-[-2px] rounded-[calc(1.5rem+2px)] z-[-1] pointer-events-none opacity-50"
-            style={{
-              background: 'conic-gradient(from 0deg, transparent, hsl(345 75% 62%), transparent)',
-            }}
-            animate={{ rotate: 360 }}
-            transition={{ duration: 2, repeat: Infinity, ease: 'linear' }}
-          />
-        )}
+        {/* Hover border glow */}
+        <motion.div
+          className="absolute inset-0 rounded-3xl pointer-events-none"
+          animate={{
+            boxShadow: isHovered
+              ? '0 0 0 1.5px hsl(345 75% 62% / 0.55), 0 8px 40px hsl(345 75% 62% / 0.2)'
+              : '0 0 0 0px transparent, 0 2px 16px hsl(340 40% 80% / 0.18)',
+          }}
+          transition={{ duration: 0.35 }}
+        />
 
         {/* Dynamic Glow following mouse */}
         <motion.div
